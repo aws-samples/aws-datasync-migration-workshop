@@ -114,4 +114,4 @@ In this module you successfully activated the DataSync agent and created a task 
 
 In the next module, you will configure the on-premises File Gateway to connect to the S3 bucket, providing access to the in-cloud files via NFS.
 
-Go to [Module 3](../module3/README.md).
+Go to [Module 3](/workshops/nfs-migration/module3).

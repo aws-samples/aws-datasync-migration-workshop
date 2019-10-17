@@ -111,4 +111,4 @@ In this module, you deployed all of the resources necessary to complete this wor
 
 In the next module, you will create a DataSync task to do an initial copy of files from the NFS server to the S3 bucket.
 
-Go to [Module 2](../module2/README.md).
+Go to [Module 2](/workshops/nfs-migration/module2).
