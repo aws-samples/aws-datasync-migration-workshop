@@ -55,7 +55,7 @@ Just as you activated the DataSync agent in the previous module, you need to per
 
 #### 3. Mount the NFS share on the Application server
 
-1. Return to the SSH console for the Application server and run the following command to create a new mount point for the File Gateway share:
+1. Return to the CLI for the Application server and run the following command to create a new mount point for the File Gateway share:
 
         $ sudo mkdir /mnt/fgw
 

@@ -27,16 +27,9 @@ In order to complete this workshop, you will need an AWS account with rights to 
 
 It will cost approximately 3 USD to run this workshop.  It is recommended that you follow the cleanup instructions once you have completed the workshop to remove all deployed resources and limit ongoing costs to your AWS account.
 
-#### Client Software
+#### Software
 
-- **Browser**  – It is recommended that you use the latest version of Chrome or Firefox for this workshop.
-
-- **SSH Client**  - You will need an SSH client (i.e. Putty, etc.) to access EC2 instances.  Use the following links for instructions on how to install an SSH client, per your operating system:
-  - [Connect from Windows using PuTTY](https://docs.aws.amazon.com/quickstarts/latest/vmlaunch/step-2-connect-to-instance.html#putty)
-  - [Connect from Mac or Linux using an SSH client](https://docs.aws.amazon.com/quickstarts/latest/vmlaunch/step-2-connect-to-instance.html#sshclient)
-
-
-- **Key Pair**  – You will need a valid EC2 Key Pair in the AWS region you choose for your on-premises region. For more information on generating and downloading an EC2 Key Pair  see [creating a key pair using Amazon EC2](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair).
+- **Internet Browser**  – It is recommended that you use the latest version of Chrome or Firefox for this workshop.
 
 ## Workshop Modules
 

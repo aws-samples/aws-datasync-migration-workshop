@@ -18,21 +18,24 @@ Metadata:
       OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
       SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-  AWS::CloudFormation::Interface:
-    ParameterGroups:
-      - Label:
-          default: Security
-        Parameters:
-          - key
-    ParameterLabels:
-      key:
-        default: 'Access Key Pair:'
-
-Parameters:
-  key:
-    Description: '(NOTE: If you don''t see a key in the list you will need to create
-      one from the EC2 console in this region)'
-    Type: AWS::EC2::KeyPair::KeyName
+# NOTE: Uncomment the following and all lines that reference the kp parameter
+# if you need a key pair for the various instances below
+#
+#   AWS::CloudFormation::Interface:
+#     ParameterGroups:
+#       - Label:
+#           default: Security
+#         Parameters:
+#           - kp
+#     ParameterLabels:
+#       kp:
+#         default: 'Access Key Pair:'
+#
+# Parameters:
+#   kp:
+#     Description: '(NOTE: If you don''t see a key in the list you will need to create
+#       one from the EC2 console in this region)'
+#     Type: AWS::EC2::KeyPair::KeyName
 
 # We use this to get the latest, correct AMI for the region we are in.
 # This avoids outdated AMIs.
@@ -165,7 +168,7 @@ Resources:
   nfsServer:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: !FindInMap [RegionalAmiMap, !Ref "AWS::Region", AmazonLinux]
+      ImageId: !FindInMap [RegionalAmiMap, !Ref "AWS::Region", AmazonLinux2]
       InstanceType: t2.micro
       IamInstanceProfile: !Ref 'nfsServerInstanceProfile'
       Tags:
@@ -175,7 +178,7 @@ Resources:
             - - NfsServer (
               - !Ref 'AWS::StackName'
               - )
-      KeyName: !Ref 'key'
+#      KeyName: !Ref 'kp'
       InstanceInitiatedShutdownBehavior: terminate
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
@@ -205,7 +208,7 @@ Resources:
     Type: AWS::EC2::Instance
     DependsOn: nfsServer
     Properties:
-      ImageId: !FindInMap [RegionalAmiMap, !Ref "AWS::Region", AmazonLinux]
+      ImageId: !FindInMap [RegionalAmiMap, !Ref "AWS::Region", AmazonLinux2]
       InstanceType: t2.micro
       Tags:
         - Key: Name
@@ -214,7 +217,7 @@ Resources:
             - - ApplicationServer (
               - !Ref 'AWS::StackName'
               - )
-      KeyName: !Ref 'key'
+#      KeyName: !Ref 'kp'
       InstanceInitiatedShutdownBehavior: terminate
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
@@ -285,7 +288,7 @@ Resources:
             - - DataSyncAgent (
               - !Ref 'AWS::StackName'
               - )
-      KeyName: !Ref 'key'
+#      KeyName: !Ref 'kp'
       InstanceInitiatedShutdownBehavior: stop
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
@@ -351,7 +354,7 @@ Resources:
             - - FileGateway (
               - !Ref 'AWS::StackName'
               - )
-      KeyName: !Ref 'key'
+#      KeyName: !Ref 'kp'
       InstanceInitiatedShutdownBehavior: stop
       BlockDeviceMappings:
         - DeviceName: /dev/xvda

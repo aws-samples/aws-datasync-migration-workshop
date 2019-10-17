@@ -20,7 +20,7 @@ With all of the data in the S3 bucket, you are now ready to shut down your NFS s
 
 #### 1. Unmount the NFS server
 
-1. From the SSH console for the Application server, run the following command to unmount the NFS server:
+1. From the CLI for the Application server, run the following command to unmount the NFS server:
 
         $ sudo umount /mnt/data
 
@@ -36,7 +36,7 @@ You&#39;re done with DataSync so you can go ahead and clean up resources.
 
 ## Validation Step
 
-From the Application server SSH console, run the following command to create another new file in the S3 bucket through the File Gateway:
+From the CLI for the Application server, run the following command to create another new file in the S3 bucket through the File Gateway:
 
     sudo cp /mnt/fgw/images/00002.jpg /mnt/fgw/new-image2.jpg
 

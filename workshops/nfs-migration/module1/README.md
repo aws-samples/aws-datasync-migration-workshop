@@ -30,7 +30,7 @@ In this module, you will use CloudFormation scripts to deploy resources in two A
   | us-east-2 | US East (Ohio) | [Launch in us-east-2](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=DataMigrationWorkshop-onPremResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-on-prem.yaml) |
 
 2. Click  **Next**  on the Create Stack page.
-3. In the **Parameters** section, select your Access Key Pair for this region.  If no key pair is listed, then you will need to create one.  See [Creating a key pair using amazon EC2](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair).
+3. Click **Next** (there are no stack parameters).
 4. Click  **Next**.
 5. Click  **Next**  Again. (skipping the Options and Advanced options sections)
 6. On the Review page, scroll to the bottom and check the boxes to acknowledge that CloudFormation will create IAM resources, then click  **Create stack**.
@@ -59,6 +59,8 @@ While the CloudFormation deployment progresses in the on-premises region, you ca
 
 Wait for the CloudFormation stacks in each region to reach the CREATE\_COMPLETE state before proceeding to the next steps.  It should take about 3 to 5 minutes for both CloudFormation stacks to complete.
 
+**NOTE:** If a stack fails to deploy because an EC2 instance type is not available in a particular availability zone, delete the stack and retry in the same region or in a different region.
+
 #### 3. Stack Outputs
 
 Upon completion, each CloudFormation stack will have a list of &quot;Outputs&quot;.  These are values such as IP addresses and resource names that will be used throughout the workshop.  You can either copy these values elsewhere or keep the page open in your browser and refer to them as you go through the workshop.
@@ -79,22 +81,23 @@ On the CloudFormation page in the **in-cloud** region, click on the **Outputs** 
 
   ![](../images/mod1output2.png)
 
-#### 4. Connect to the Application server via SSH
+#### 4. Connect to the Application server using EC2 Instance Connect
 
 1. From the AWS console in the **on-premises** region, click  **Services**  and select  **EC2.**
-
 2. Select  **Instances**  from the menu on the left.
 3. Wait until the state of the four new instances (ApplicationServer, FileGateway, NfsServer, and DataSyncAgent) shows as _running_ and all Status Checks have completed (i.e. **not** in _Initializing_ state).
 4. Right-click on the **ApplicationServer** instance and select  **Connect** from the menu.
-5. From the dialog box, select and copy the SSH command highlighted below.
+5. From the dialog box, select the EC2 Instance Connect option, as shown below:
 
   ![](../images/mod1ssh1.png)
 
-6. If using a CLI for SSH, paste the selected text into your SSH client, specifying the correct path to your Access Key Pair _.pem_ file.  If prompted to add this IP address to a list of known hosts, enter &quot;yes&quot;.
+6. For the **User name** field, enter "ec2-user", then click **Connect**.
+
+A new dialog box or tab on your browser should appear, providing you with a command line interface (CLI).  Keep this open - you will use the command line on the Application server throughout this workshop.
 
 ## Validation Step
 
-In the SSH console for the Application server, run the following commands to mount the NFS export and verify the files on the NFS server.  Use the **nfsServerPrivateIP** value from the **on-premises** CloudFormation stack output.
+In the CLI for the Application server, run the following commands to mount the NFS export and verify the files on the NFS server.  Use the **nfsServerPrivateIP** value from the **on-premises** CloudFormation stack output.
 
     $ sudo mount -t nfs <nfs-server-ip-address>:/media/data /mnt/data
     $ ls /mnt/data/images
