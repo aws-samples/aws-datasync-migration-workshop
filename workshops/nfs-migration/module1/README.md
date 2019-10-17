@@ -12,8 +12,6 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 # Module 1
 ## Deploy resources in the on-premises and in-cloud regions
 
-## Introduction
-
 In this module, you will use CloudFormation scripts to deploy resources in two AWS regions: one that represents the on-premises environment, and one for the in-cloud environment.  Once all resources have been deployed, you will mount an export from the NFS server on the Application server and verify existing files.
 
 ![](../images/mod1arch.png)

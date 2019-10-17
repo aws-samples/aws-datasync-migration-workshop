@@ -12,8 +12,6 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 # Module 4
 ## One last incremental copy before cutover
 
-## Introduction
-
 In this module, you will perform an incremental data transfer using DataSync.  This will get any new files that may have been created after the initial data copy.  Once you have verified all files from the on-premises NFS server have been copied, you can proceed to cutover.
 
 ![](../images/fullarch.png)

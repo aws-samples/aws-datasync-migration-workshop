@@ -12,8 +12,6 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 # Module 3
 ## Access S3 bucket on-premises using File Gateway
 
-## Introduction
-
 You now have the files from the NFS server copied to your S3 bucket.  In this module, you will configure the File Gateway in the on-premises region to connect to your S3 bucket and provide access to the files in the bucket through an NFS share.  You will mount the File Gateway share on the Application server to validate access to the files.
 
 ![](../images/fullarch.png)

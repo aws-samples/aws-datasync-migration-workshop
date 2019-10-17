@@ -12,8 +12,6 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 # Module 5
 ## Cutover to File Gateway and shutdown the NFS server
 
-## Introduction
-
 With all of the data in the S3 bucket, you are now ready to shut down your NFS server and move exclusively to using the File Gateway.  In this module, you will unmount the NFS server and clean up your DataSync resources.  You will then write some test files through File Gateway, verifying they end up in the S3 bucket.
 
 ![](../images/mod5arch.png)
