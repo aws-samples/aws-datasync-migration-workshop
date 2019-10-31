@@ -58,7 +58,7 @@ Although the agent instance was created in the previous module, before it can be
 2. Create a location for the S3 bucket.  Select **Amazon S3 bucket** from the _Location type_ drop-down.
 3. From the _S3 bucket_ drop-down, select the S3 bucket that starts with **data-migration-workshop** and is followed by a long GUID.
 4. Under _Folder_, enter &quot;/&quot;.  This will copy all files to the top-level of the bucket.
-5. Under _IAM role_, select the bucket role that starts with **DataMigrationWorkshop**.  The full name of the role can be found in the outputs for the in-cloud CloudFormation stack.
+5. Under _IAM role_, select the S3 bucket IAM role that starts with **DataMigrationWorkshop-inCloud**.  The full name of the role can be found in the outputs for the in-cloud CloudFormation stack.
 
   ![](../images/mod2ds4.png)
 

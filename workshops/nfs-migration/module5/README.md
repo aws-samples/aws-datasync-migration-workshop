@@ -56,11 +56,11 @@ To make sure all resources are deleted after this workshop scenario make sure yo
 
         sudo umount /mnt/fgw
 
-2. Delete the File Gateway **NFS file share** in the in-cloud region
-3. Delete the File Gateway in the in-cloud region named **DataMigrationGateway**.  Note this will not delete the gateway EC2 instance.  The instance will get deleted when the CloudFormation in the on-premises region is deleted.
-4. Delete all objects in the **data-migration-workshop** S3 bucket in the in-cloud region.  The bucket must be empty before it can be deleted by CloudFormation in the next step.
-
-5. Go to the CloudFormation page in the in-cloud region and delete the stack named &quot;DataMigrationWorkshop-inCloudResources&quot;
-6. Go to the CloudFormation page in the on-premises region and delete the stack named &quot;DataMigrationWorkshop-onPremResources&quot;
+2. Close the browser window running the CLI.
+3. Go to the Storage Gateway page in the in-cloud region and delete the File Gateway **NFS file share** in the in-cloud region
+4. Delete the File Gateway in the in-cloud region named **DataMigrationGateway**.  Note this will not delete the gateway EC2 instance.  The instance will get deleted when the CloudFormation in the on-premises region is deleted.
+5. Delete all objects in the **data-migration-workshop** S3 bucket in the in-cloud region.  The bucket must be empty before it can be deleted by CloudFormation in the next step.
+6. Go to the CloudFormation page in the in-cloud region and delete the stack named &quot;DataMigrationWorkshop-inCloudResources&quot;
+7. Go to the CloudFormation page in the on-premises region and delete the stack named &quot;DataMigrationWorkshop-onPremResources&quot;
 
 To make sure that all CloudFormation templates have been deleted correctly, confirm that all EC2 instances created in this workshop in the on-premises region are in the **terminated** state.
