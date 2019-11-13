@@ -30,7 +30,7 @@ Just as you activated the DataSync agent in the previous module, you need to per
 5. Select the **Public** endpoint type, then click **Next**.
 6. Enter the **Public IP address** of the File Gateway instance that was created in the first module using CloudFormation.  Click **Connect to gateway**.
 7. Name the gateway &quot;DataMigrationGateway&quot; then click **Activate gateway**.
-8. The gateway will be activated and then it will spend a minute or so preparing the local disk devices.  Allocate the **300 GB /dev/sdc** device to **Cache.**  This is the local disk on the gateway that will be used to cache frequently accessed files.
+8. The gateway will be activated and then it will spend a minute or so preparing the local disk devices.  Allocate the **300 GiB /dev/sdc** device to **Cache.**  This is the local disk on the gateway that will be used to cache frequently accessed files.
 9. Click **Configure logging.**
 10. Leave the setting at _Disable Logging_ then click **Save and continue.**
 11. From the main Storage Gateway page, you will see your gateway listed.
