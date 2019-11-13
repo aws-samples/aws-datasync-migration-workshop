@@ -18,7 +18,7 @@ You now have the files from the NFS server copied to your S3 bucket.  In this mo
 
 ## Module Steps
 
-#### 1. Active the File Gateway
+#### 1. Activate the File Gateway
 
 Just as you activated the DataSync agent in the previous module, you need to perform a similar step for the File Gateway, activating it in the **in-cloud** region.  Follow the steps below to activate the gateway.
 
@@ -30,7 +30,7 @@ Just as you activated the DataSync agent in the previous module, you need to per
 5. Select the **Public** endpoint type, then click **Next**.
 6. Enter the **Public IP address** of the File Gateway instance that was created in the first module using CloudFormation.  Click **Connect to gateway**.
 7. Name the gateway &quot;DataMigrationGateway&quot; then click **Activate gateway**.
-8. The gateway will be activated and then it will spend a minute or so preparing the local disk devices.  Allocate the **300 GB /dev/sdc** device to **Cache.**  This is the local disk that will be used to cache frequently accessed files.
+8. The gateway will be activated and then it will spend a minute or so preparing the local disk devices.  Allocate the **300 GB /dev/sdc** device to **Cache.**  This is the local disk on the gateway that will be used to cache frequently accessed files.
 9. Click **Configure logging.**
 10. Leave the setting at _Disable Logging_ then click **Save and continue.**
 11. From the main Storage Gateway page, you will see your gateway listed.
@@ -44,18 +44,16 @@ Just as you activated the DataSync agent in the previous module, you need to per
 3. Select **NFS** as the access method and make sure your gateway from the previous step is selected.
 4. Click **Next**.
 5. Keep the default settings, then click **Next**
-6. Under the **Allowed clients** section, click **Edit** and change &quot;0.0.0.0/0&quot; to the **Private IP Address** of the Application server.  This will only allow the Application server to access the NFS file share.  Click the **Close** button.
+6. Under the **Allowed clients** section, click **Edit** and change &quot;0.0.0.0/0&quot; to the **Private IP Address** of the Application server.  This will only allow the Application server to access the NFS file share on the gateway.  Click the **Close** button.
 7. Under the **Mount options** section, change the **Squash level** to &quot;No root squash&quot;.  Click the **Close** button.
 8. Click **Create file share**.
 9. Select the check box next to the new file share and note the mount instructions.
 
   ![](../images/mod3fgw2.png)
 
-10. Copy the **Linux** mount command
-
 #### 3. Mount the NFS share on the Application server
 
-1. Return to the CLI for the Application server and run the following command to create a new mount point for the File Gateway share:
+1. Return to the CLI for the Application server and run the following command to create a new mount point for the File Gateway share (if the CLI is frozen, close the window and reconnect using the steps in module 1):
 
         $ sudo mkdir /mnt/fgw
 

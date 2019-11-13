@@ -31,7 +31,7 @@ You have already created a DataSync task to copy files from the NFS server to th
 1. Return to the in-cloud region AWS management console and go to the **DataSync** service.
 2. Select the task created previously and click the **Start** button.
 3. Use the default settings and then click **Start**.
-4. Scroll to the bottom of the page and select the newest task execution from the list.
+4. Go to the History tab and select the newest task execution from the list.
 
   ![](../images/mod4ds1.png)
 

@@ -26,9 +26,9 @@ Although the agent instance was created in the previous module, before it can be
 
 1. Go to the AWS Management console page in the **in-cloud** region and click  **Services**  then select  **DataSync.**
 2. If no DataSync agents exist, click the **Get started** button, otherwise click the **Create agent** button.
-3. Leave the Service endpoint as-is.
+3. Leave the Service endpoint as **"Public service endpoints"**.
 
-4. Under the **Activation key** section, enter the **Public IP address** of the DataSync agent instance running in the on-premises region, per the CloudFormation outputs.  Here you use the Public IP address, as it needs to be accessible by your web browser.  Enter the IP address of the agent as shown below, then click **Get key.**
+4. Under the **Activation key** section, enter the **Public IP address** of the DataSync agent instance running in the on-premises region.  You can get this IP address from the CloudFormation outputs in the on-premises region.  You use the public IP address here because the agent needs to be accessible by your web browser for activation.  Enter the IP address of the agent as shown below, then click **Get key.**
 
   ![](../images/mod2ds1.png)
 
@@ -40,7 +40,7 @@ Although the agent instance was created in the previous module, before it can be
 
 #### 2. Create NFS location
 
-1. On the left-hand side of the page, click on **Locations** and then click on **Create location**.
+1. On the left-hand side of the DataSync service page, click on **Locations** and then click on **Create location**.
 
 2. Create a location for the on-premises NFS server.  Select **Network File System (NFS)** from the _Location type_ drop-down.
 3. From the _Agents_ drop-down, select the DataSync agent that was created in the previous step.
@@ -53,7 +53,7 @@ Although the agent instance was created in the previous module, before it can be
 
 #### 3. Create S3 location
 
-1. On the left-hand side of the page, click on **Locations** and then click on **Create location**.
+1. On the left-hand side of the DataSync service page, click on **Locations** and then click on **Create location**.
 
 2. Create a location for the S3 bucket.  Select **Amazon S3 bucket** from the _Location type_ drop-down.
 3. From the _S3 bucket_ drop-down, select the S3 bucket that starts with **data-migration-workshop** and is followed by a long GUID.
@@ -70,7 +70,7 @@ On the left-side of the page, click **Locations** again.  You should now have tw
 
 #### 4. Create a task
 
-1. On the left-hand side of the page, click on **Tasks** and then click on **Create task**.
+1. On the left-hand side of the DataSync service page, click on **Tasks** and then click on **Create task**.
 
 2. Under _Source location options_, select **Choose an existing location**.
 3. Under the _Existing locations_ drop-down, select the NFS server location you created previously.
@@ -92,7 +92,7 @@ On the left-side of the page, click **Locations** again.  You should now have tw
 
 2. To run the task, click the **Start** button, verify the settings, and then click **Start**.
 3. The task will immediately go into the &quot;Running&quot; state.
-4. Scroll to the bottom of the page, under the **History** section and click on the task execution object listed.
+4. Under the **History** tab, click on the task execution object in the list.
 
   ![](../images/mod2ds8.png)
 
