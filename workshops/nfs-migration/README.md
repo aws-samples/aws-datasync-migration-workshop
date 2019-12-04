@@ -1,6 +1,6 @@
 # **AWS DataSync**
 
-### NFS server migration using AWS DataSync and Storage Gateway
+### NFS server migration using AWS DataSync and AWS Storage Gateway
 
 © 2019 Amazon Web Services, Inc. and its affiliates. All rights reserved.
 This sample code is made available under the MIT-0 license. See the LICENSE file.
@@ -13,7 +13,7 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 
 In your data center, you have an NFS server that is starting to age out.  Most of the data on the server is several years old and is only accessed for reading occasionally.  There are new files being written to the server but not very often.  To reduce your data center footprint and to free up resources, you would like to move the data on the NFS server into the cloud.  However, you cannot yet move your application servers that access the NFS data – those need to stay on-premises to minimize latency for your users.
 
-After doing some research, you have realized that you can use AWS DataSync to migrate the data from your on-premises NFS server to Amazon S3, and you can use AWS Storage Gateway to provide NFS access on-premises to the data once it is in S3.
+After doing some research, you have realized that you can use [AWS DataSync](https://aws.amazon.com/datasync/) to migrate the data from your on-premises NFS server to Amazon S3, and you can use [AWS Storage Gateway](https://aws.amazon.com/storagegateway) to provide NFS access on-premises to the data once it is in S3.
 
 This workshop will walk you through this scenario, using CloudFormation templates to deploy resources and the AWS Management console to configure those resources accordingly.  As shown in the architecture diagram below, an NFS server, an Application server, a DataSync agent, and a File Gateway appliance will be deployed in an AWS region simulating the on-premises environment.  An S3 bucket will be created in an AWS region, simulating the AWS cloud region to which the NFS server&#39;s data will be migrated.
 
