@@ -1,0 +1,325 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS DataSync Workshop - NFS Small Files Migration - On-Premises Region
+Metadata:
+  License:
+    Description: |
+      Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+      Permission is hereby granted, free of charge, to any person obtaining a copy of this
+      software and associated documentation files (the "Software"), to deal in the Software
+      without restriction, including without limitation the rights to use, copy, modify,
+      merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+      permit persons to whom the Software is furnished to do so.
+
+      THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+      INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+      PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+      HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+      OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+      SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+  AWS::CloudFormation::Interface:
+     ParameterGroups:
+       - Label:
+           default: Security
+         Parameters:
+           - kp
+     ParameterLabels:
+       kp:
+         default: 'Access Key Pair:'
+
+Parameters:
+   kp:
+     Description: '(NOTE: If you don''t see a key in the list you will need to create
+       one from the EC2 console in this region)'
+     Type: AWS::EC2::KeyPair::KeyName
+
+# We use this to get the latest, correct AMI for the region we are in.
+# This avoids outdated AMIs.
+Fn::Transform:
+  Name: AWS::Include
+  Parameters:
+    Location: s3://storage-specialists-cf-templates/regional_ami_mapping.yaml
+
+
+Resources:
+
+  # Create a dedicated VPC with internet connectivity
+  dmVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.12.14.0/24
+      EnableDnsSupport: 'true'
+      EnableDnsHostnames: 'true'
+      InstanceTenancy: default
+      Tags:
+      - Key: Name
+        Value: DsSmallFilesNfsWorkshopVPC
+  dmSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref 'dmVPC'
+      CidrBlock: 10.12.14.0/24
+      MapPublicIpOnLaunch: 'True'
+      Tags:
+      - Key: Name
+        Value: DsSmallFilesNfsWorkshopSubnet1
+  dmInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+      - Key: Name
+        Value: DsSmallFilesNfsWorkshopIGW
+  dmAttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref 'dmVPC'
+      InternetGatewayId: !Ref 'dmInternetGateway'
+  dmRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref 'dmVPC'
+      Tags:
+      - Key: Name
+        Value: DsSmallFilesNfsWorkshopRouteTable
+  dmSubnet1RouteAssociaton:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref 'dmSubnet1'
+      RouteTableId: !Ref 'dmRouteTable'
+  dmRoutetoInternet:
+    Type: AWS::EC2::Route
+    DependsOn: dmInternetGateway
+    Properties:
+      RouteTableId: !Ref 'dmRouteTable'
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref 'dmInternetGateway'
+
+  # We use the same security group for all four resources.  Technically port 80
+  # isn't needed for the NFS server and the application server, but nothing is
+  # listening on those ports on those servers.
+  dmSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: DataSync Small Files NFS Workshop - Security Group for all resources
+      VpcId: !Ref 'dmVPC'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: '0.0.0.0/0'
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: '0.0.0.0/0'
+
+  # We use this so we can limit access on this port to the SG
+  dmSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref 'dmSecurityGroup'
+      IpProtocol: tcp
+      ToPort: '2049'
+      FromPort: '2049'
+      SourceSecurityGroupId: !Ref 'dmSecurityGroup'
+    DependsOn: dmSecurityGroup
+
+  nfsServerInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref 'nfsServerIamRole'
+  nfsServerIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+        Version: '2012-10-17'
+  nfsServerRolePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:GetObject
+            Resource:
+              - arn:aws:s3:::aws-datasync-samples/files/fs1m-small.tar
+              - arn:aws:s3:::aws-datasync-samples/files/fs500k-small.tar
+        Version: '2012-10-17'
+      PolicyName: policy
+      Roles:
+        - !Ref 'nfsServerIamRole'
+  nfsServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap [RegionalAmiMap, !Ref "AWS::Region", AmazonLinux2]
+      InstanceType: c5.2xlarge
+      IamInstanceProfile: !Ref 'nfsServerInstanceProfile'
+      Tags:
+        - Key: Name
+          Value: !Join
+            - ''
+            - - NfsServer-
+              - !Ref 'AWS::StackName'
+      KeyName: !Ref 'kp'
+      InstanceInitiatedShutdownBehavior: terminate
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: '8'
+            DeleteOnTermination: 'true'
+            VolumeType: gp2
+        - DeviceName: /dev/xvdb
+          Ebs:
+            VolumeSize: '200'
+            DeleteOnTermination: 'true'
+            VolumeType: gp2
+        - DeviceName: /dev/xvdc
+          Ebs:
+            VolumeSize: '200'
+            DeleteOnTermination: 'true'
+            VolumeType: gp2
+        - DeviceName: /dev/xvdd
+          Ebs:
+            VolumeSize: '200'
+            DeleteOnTermination: 'true'
+            VolumeType: gp2
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: 'true'
+          DeviceIndex: '0'
+          GroupSet:
+            - !Ref 'dmSecurityGroup'
+          SubnetId: !Ref 'dmSubnet1'
+      UserData: !Base64
+        Fn::Join:
+          - ''
+          - - "#!/bin/bash\n"
+            - "mkdir -p /mnt/fs1 /mnt/fs2 /mnt/fs3\n"
+            - "devs=`lsblk | grep 200G | awk '{ print $1 }'`\n"
+            - "fs=1\n"
+            - "for d in $devs\n"
+            - "do\n"
+            - "  mkfs.xfs /dev/${d}\n"
+            - "  mount /dev/${d} /mnt/fs${fs}\n"
+            - "  fs=$(( fs + 1 ))\n"
+            - "done\n"
+            - "chmod 777 /mnt/fs*\n"
+            - "aws s3 cp s3://aws-datasync-samples/files/fs500k-small.tar /mnt/fs1/fs500k-small.tar >> /dev/null\n"
+            - "aws s3 cp s3://aws-datasync-samples/files/fs500k-small.tar /mnt/fs2/fs500k-small.tar >> /dev/null\n"
+            - "aws s3 cp s3://aws-datasync-samples/files/fs1m-small.tar /mnt/fs3/fs1m-small.tar >> /dev/null\n"
+            - "cd /mnt/fs1/ && tar -xf fs500k-small.tar &\n"
+            - "cd /mnt/fs2/ && tar -xf fs500k-small.tar &\n"
+            - "cd /mnt/fs3/ && tar -xf fs1m-small.tar &\n"
+            - "wait\n"
+            - "rm -f /mnt/fs1/fs500k-small.tar /mnt/fs2/fs500k-small.tar /mnt/fs3/fs1m-small.tar\n"
+
+  dataSyncAgentInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref 'dataSyncAgentIamRole'
+  dataSyncAgentIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+        Version: '2012-10-17'
+  dataSyncAgentRolePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - datasync:*
+            Resource:
+              - '*'
+          - Effect: Allow
+            Action:
+              - iam:PassRole
+            Resource:
+              - '*'
+        Version: '2012-10-17'
+      PolicyName: policy
+      Roles:
+        - !Ref 'dataSyncAgentIamRole'
+
+  dataSyncAgent1:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap [RegionalAmiMap, !Ref "AWS::Region", DataSync]
+      InstanceType: m5.2xlarge
+      IamInstanceProfile: !Ref 'dataSyncAgentInstanceProfile'
+      Tags:
+        - Key: Name
+          Value: !Join
+            - ''
+            - - DataSyncAgent1-
+              - !Ref 'AWS::StackName'
+      KeyName: !Ref 'kp'
+      InstanceInitiatedShutdownBehavior: stop
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: '80'
+            DeleteOnTermination: 'true'
+            VolumeType: gp2
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: 'true'
+          DeviceIndex: '0'
+          GroupSet:
+            - !Ref 'dmSecurityGroup'
+          SubnetId: !Ref 'dmSubnet1'
+
+  dataSyncAgent2:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap [RegionalAmiMap, !Ref "AWS::Region", DataSync]
+      InstanceType: m5.2xlarge
+      IamInstanceProfile: !Ref 'dataSyncAgentInstanceProfile'
+      Tags:
+        - Key: Name
+          Value: !Join
+            - ''
+            - - DataSyncAgent2-
+              - !Ref 'AWS::StackName'
+      KeyName: !Ref 'kp'
+      InstanceInitiatedShutdownBehavior: stop
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: '80'
+            DeleteOnTermination: 'true'
+            VolumeType: gp2
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: 'true'
+          DeviceIndex: '0'
+          GroupSet:
+            - !Ref 'dmSecurityGroup'
+          SubnetId: !Ref 'dmSubnet1'
+
+Outputs:
+  nfsServerPrivateIP:
+    Description: NFS Server Private IP Address
+    Value: !GetAtt nfsServer.PrivateIp
+  dataSyncAgent1PublicIP:
+    Description: DataSync Agent 1 - Public IP Address
+    Value: !GetAtt dataSyncAgent1.PublicIp
+  dataSyncAgent2PublicIP:
+    Description: DataSync Agent 2 - Public IP Address
+    Value: !GetAtt dataSyncAgent2.PublicIp

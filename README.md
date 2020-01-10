@@ -16,3 +16,4 @@ To run through each workshop, you will need an AWS Account, preferrably with Adm
 ### Workshops
 
 - [NFS server migration using AWS DataSync and Storage Gateway](/workshops/nfs-migration)
+- [Migrate millions of files using AWS DataSync](/workshops/nfs-million-files)
