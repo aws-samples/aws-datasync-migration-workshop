@@ -124,4 +124,4 @@ In this module you successfully created three tasks to copy files from the three
 
 In the next module, you will perform two more transfers, diving deeper into how DataSync handles incremental transfers of data.
 
-Go to [Module 6](/workshops/nfs-millions-files/module6).
+Go to [Module 6](/workshops/nfs-million-files/module6).

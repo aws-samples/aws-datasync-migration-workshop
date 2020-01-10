@@ -55,4 +55,4 @@ This workshop consists of the following modules:
 - **Module 6** - Perform an incremental transfer
 - **Module 7** - Workshop clean-up
 
-To get started, go to [Module 1](/workshops/nfs-migration/module1).
+To get started, go to [Module 1](/workshops/nfs-million-files/module1).

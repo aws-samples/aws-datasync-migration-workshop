@@ -125,4 +125,4 @@ In this module you successfully created a task to copy some of the files from fs
 
 In the next module, you will create three tasks to copy files from the three file systems: fs1, fs2, and fs3.  You will then execute the task and verify it executed successfully.
 
-Go to [Module 5](/workshops/nfs-millions-files/module5).
+Go to [Module 5](/workshops/nfs-million-files/module5).

@@ -120,7 +120,7 @@ Now re-run the same task again.  However, when prompted for task settings, scrol
 
 Here you have the option to provide one or more **include** patterns, similar to the patterns you specified previously to exclude the .htaccess and index.html files.  But in this case, you are telling the DataSync task which files and folders to explicitly include, ignoring everything else.
 
-In the edit box, enter the pattern **/d0001/dir0001/** and then click the **Start** button.
+In the edit box, enter the pattern **/d0001/dir0001/\*** and then click the **Start** button.
 
 ![](../images/mod6ds3.png)
 
@@ -140,4 +140,4 @@ In this module, you re-ran the copy task for **fs2** to get incremental changes 
 
 In the next module, you will go through the steps to clean up resources from this workshop.
 
-Go to [Module 7](/workshops/nfs-millions-files/module7).
+Go to [Module 7](/workshops/nfs-million-files/module7).
