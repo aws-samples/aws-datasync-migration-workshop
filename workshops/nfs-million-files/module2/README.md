@@ -12,9 +12,9 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 # Module 2
 ## Configure the NFS server
 
-Understanding how much data needs to be copied and how that data is organized is a key part of planning when using AWS DataSync. Three file systems have been created on the NFS server and have been pre-populated with randomly generated data sets.
+Understanding how much data needs to be copied and how that data is organized is a key part of planning when using AWS DataSync. Three file systems have been created on the NFS server and are being pre-populated with randomly generated datasets.
 
-In this module, you will browse the NFS server that was created in the previous module and configure it with the proper export settings so it can be used by AWS DataSync.
+In this module, you will browse the NFS server that was created in the previous module, verify that the datasets have been fully initialized, and then configure the NFS server with the proper export settings so it can be used by AWS DataSync.
 
 ## Module Steps
 
@@ -23,9 +23,13 @@ In this module, you will browse the NFS server that was created in the previous 
 1. Go to the AWS Management console page in the **ON-PREMISES** region and click **Services** then select **EC2**.
 2. Click on the list of instances and then select the NFS Server.  Click on the **Connect** button and follow the instructions to create an SSH connection to the NFS server.
 
-#### 2. Browse the file systems
+#### 2. Verify the datasets have been completed
 
-There are three 200 GiB EBS volumes attached to the NFS server.  Each volume has been formatted with an XFS file system and pre-populated with data.
+Before continuing, you will need to wait for the datasets on the NFS server to be initialized.  The server will download three archives and then extract the archives to the three file systems.  The process will take about 10-15 minutes to complete.  Once the datasets are initialized, you will see a file named **datasets_ready** in the **/home/ec2_user** directory.
+
+#### 3. Browse the file systems
+
+There are three 200 GiB EBS volumes attached to the NFS server.  Each volume has been formatted with an XFS file system and pre-populated with data from the previous step.
 
 1. On the NFS server, run the following command to list the three file systems:
 
@@ -62,7 +66,7 @@ There are three 200 GiB EBS volumes attached to the NFS server.  Each volume has
 
   These commands show there are 50 folders in fs1, each containing 20 sub-folders.  Each sub-folder contains 500 files along with three extra files: **.htaccess, index.html, manifest.lst.**  The other file systems are similar, except that fs3 has 100 top-level folders, rather than 50.  For this workshop, you will copy all files and directories to your S3 bucket except for .htaccess and index.html.
 
-#### 3. Configure the NFS exports
+#### 4. Configure the NFS exports
 
 You want to transfer data from all three file systems using DataSync.  To do so, you will need to create three NFS exports (aka file shares), one per file system.  On this version of Linux, you do this by modifying the **/etc/exports** file.
 
