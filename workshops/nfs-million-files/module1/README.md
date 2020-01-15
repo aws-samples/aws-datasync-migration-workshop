@@ -40,7 +40,7 @@ While the CloudFormation deployment progresses in the ON-PREMISES region, you ca
 
 #### 2. Deploy AWS resources for the IN-CLOUD region
 
-1. Click one of the launch links in the table below to deploy the **IN-CLOUD** resources using CloudFormation.  Use a different region from the ON-PREMISES region.  To avoid errors in deployment, select a region in which you have previously created AWS resources.
+1. Click one of the launch links in the table below to deploy the **IN-CLOUD** resources using CloudFormation.  Use a **different region** from the ON-PREMISES region.  To avoid errors in deployment, select a region in which you have previously created AWS resources.
 
   | **Region Code** | **Region Name** | **Launch** |
   | --- | --- | --- |
@@ -83,6 +83,6 @@ On the CloudFormation page in the **IN-CLOUD** region, click on the **Outputs** 
 
 In this module, you deployed all of the resources necessary to complete this workshop in both the on-premises region and the in-cloud region.  At this time, datasets are being initialized on the NFS server.  That process will take approximately 10-15 minutes to complete.
 
-In the next module, you will verify the datasets have been initialized, then you will configure the NFS server and prepare it to be used by DataSync for transferring files to S3.
+In the next module, you will verify that the datasets have been initialized, then you will configure the NFS server and prepare it to be used by DataSync for transferring files to S3.
 
 Go to [Module 2](/workshops/nfs-million-files/module2).

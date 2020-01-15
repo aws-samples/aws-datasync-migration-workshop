@@ -23,7 +23,7 @@ In this module, you will browse the NFS server that was created in the previous 
 1. Go to the AWS Management console page in the **ON-PREMISES** region and click **Services** then select **EC2**.
 2. Click on the list of instances and then select the NFS Server.  Click on the **Connect** button and follow the instructions to create an SSH connection to the NFS server.
 
-#### 2. Verify the datasets have been completed
+#### 2. Verify the datasets have been initialized
 
 Before continuing, you will need to wait for the datasets on the NFS server to be initialized.  The server will download three archives and then extract the archives to the three file systems.  The process will take about 10-15 minutes to complete.  Once the datasets are initialized, you will see a file named **datasets_ready** in the **/home/ec2_user** directory.
 
@@ -77,6 +77,7 @@ You want to transfer data from all three file systems using DataSync.  To do so,
         /mnt/fs3 10.12.14.99(ro,no_root_squash) 10.12.14.16(ro,no_root_squash)
 
   Replace the IP addresses above with the **private** IP address assigned to the EC2 instances for each DataSync agent.
+
 2. Run the following command to restart the NFS server and apply the export settings:
 
         [ec2-user@ ~]$ sudo systemctl restart nfs

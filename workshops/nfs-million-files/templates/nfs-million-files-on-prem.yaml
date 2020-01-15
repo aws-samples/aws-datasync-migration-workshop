@@ -161,7 +161,7 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       ImageId: !FindInMap [RegionalAmiMap, !Ref "AWS::Region", AmazonLinux2]
-      InstanceType: c5.2xlarge
+      InstanceType: c5.4xlarge
       IamInstanceProfile: !Ref 'nfsServerInstanceProfile'
       Tags:
         - Key: Name
@@ -220,7 +220,7 @@ Resources:
             - "cd /mnt/fs3/ && tar -xf fs1m-small.tar &\n"
             - "wait\n"
             - "rm -f /mnt/fs1/fs500k-small.tar /mnt/fs2/fs500k-small.tar /mnt/fs3/fs1m-small.tar\n"
-            - "echo READY > /home/ec2_user/datasets_ready\n"
+            - "echo READY > /home/ec2-user/datasets_ready\n"
 
   dataSyncAgentInstanceProfile:
     Type: AWS::IAM::InstanceProfile

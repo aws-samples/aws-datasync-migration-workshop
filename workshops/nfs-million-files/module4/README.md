@@ -30,7 +30,7 @@ In this module, you will run a simple task to copy a portion of the data from th
 
 6. Click **Next**.
 7. Now you will create the destination location, which is the S3 bucket. Make sure **Create a new location** is selected and for _Location type_ select **Amazon S3 bucket** from the drop-down.
-8. From the _S3 bucket_ drop-down, select the bucket that was created as part of the CloudFormation stack in the **IN-CLOUD** region.  The bucket name is prefixed with _millions_files_nfs_.
+8. From the _S3 bucket_ drop-down, select the bucket that was created as part of the CloudFormation stack in the **IN-CLOUD** region.  The bucket name is prefixed with _million_files_nfs_.
 9. For _S3 storage class_, select **Standard**.
 10. Under _Folder_, enter **/fs1/d0001**.  This will put all of the files transferred into this folder on the bucket and provides a place for future files to be copied.
 11. Under _IAM role_, select the S3 bucket IAM role that starts with **MillionFiles-inCloud**.  The full name of the role can be found in the outputs for the CloudFormation stack from the IN-CLOUD region.  This role gives the DataSync service the rights necessary to write data to the S3 bucket.  We could have also allowed the DataSync service to Autogenerate a role for us.
@@ -64,11 +64,11 @@ In this module, you will run a simple task to copy a portion of the data from th
 
 From the AWS management console, select **Services** then **S3.**  In the bucket list, click on the bucket starting with **million-files-nfs**.  You should see a top-level folder **fs1**, inside of which is a folder **d0001**. Inside this folder will be the 20 sub-folders containing the files that were copied, including the manifest.lst file for each sub-folder.  Verify that the .htaccess and index.html files were _not_ copied.
 
-To get more information on the results of the task execution, run the following commands, replacing the execution ID with the execution ID at the top of the DataSync console page, and the region for your IN-CLOUD region:
-
   ![](../images/mod4ds5.png)
 
-  Use the "list-task-executions" command to get the full ARN of the task execution, which is then passed to the "describe-task-executions" command.
+To get more information on the results of the task execution, run the following commands, replacing the **execution ID** with the execution ID at the top of the DataSync console page (as shown above).  Also, replace the **--region** parameter with your IN-CLOUD region:
+
+Use the "list-task-executions" command to get the full ARN of the task execution, which is then passed to the "describe-task-executions" command.
 
     ~$ aws datasync list-task-executions --region us-east-2 | grep exec-087e8a24374165fa2
         "TaskExecutionArn": "arn:aws:datasync:us-east-2:--:task/task-0409cb63be00594d2/execution/exec-087e8a24374165fa2",
@@ -117,7 +117,7 @@ The output from the "describe-task-executions" command is shown below:
         }
     }
 
-The key takeaway from the command output is the time the task spent in the prepare, transfer and verify stages (PrepareDuration, TransferDuration, and VerifyDuration, respectively).  The numbers are in milliseconds, so you can see that the task spent **3.4** seconds in the prepare phse, **77** seconds in the transfer phase, and **13.4** seconds in the verify phase.
+The key takeaway from the command output is the time the task spent in the prepare, transfer and verify stages (PrepareDuration, TransferDuration, and VerifyDuration, respectively).  The numbers are in milliseconds, so you can see from the above output that the task spent **3.4** seconds in the prepare phse, **77** seconds in the transfer phase, and **13.4** seconds in the verify phase.
 
 ## Module Summary
 

@@ -36,7 +36,7 @@ Because this is an advanced-level workshop, it is expected that you are familiar
 
 In order to complete this workshop, you will need an AWS account with rights to create AWS IAM roles, EC2 instances, AWS DataSync objects, and CloudFormation stacks in the AWS regions you select.
 
-It will cost approximately XXX USD to run this workshop.  It is recommended that you follow the cleanup instructions once you have completed the workshop to remove all deployed resources and limit ongoing costs to your AWS account.
+It will cost approximately **15 USD** to run this workshop.  It is recommended that you follow the cleanup instructions once you have completed the workshop to remove all deployed resources and limit ongoing costs to your AWS account.
 
 #### Software
 

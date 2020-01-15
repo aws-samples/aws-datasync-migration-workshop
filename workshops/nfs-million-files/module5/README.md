@@ -29,7 +29,7 @@ In this module, you will create three DataSync tasks - one per file system on th
 3. Click **Next**.
 4. Use the following settings for the destination location:
    - Location type:  **Amazon S3 bucket**
-   - S3 bucket: use the bucket name prefixed with **millions_files_nfs**
+   - S3 bucket: use the bucket name prefixed with **million_files_nfs**
    - S3 storage class: **Standard**
    - Folder: **/fs1**
    - IAM role: select the S3 bucket IAM role that starts with **MillionFiles-inCloud**
@@ -52,7 +52,7 @@ In this module, you will create three DataSync tasks - one per file system on th
 3. Click **Next**.
 4. Use the following settings for the destination location:
    - Location type:  **Amazon S3 bucket**
-   - S3 bucket: use the bucket name is prefixed with **millions_files_nfs**
+   - S3 bucket: use the bucket name is prefixed with **million_files_nfs**
    - S3 storage class: **Standard**
    - Folder: **/fs2**
    - IAM role: select the S3 bucket IAM role that starts with **MillionFiles-inCloud**
@@ -76,7 +76,7 @@ In this module, you will create three DataSync tasks - one per file system on th
 3. Click **Next**.
 4. Use the following settings for the destination location:
    - Location type:  **Amazon S3 bucket**
-   - S3 bucket: use the bucket name is prefixed with **millions_files_nfs**
+   - S3 bucket: use the bucket name is prefixed with **million_files_nfs**
    - S3 storage class: **Standard**
    - Folder: **/fs3**
    - IAM role: select the S3 bucket IAM role that starts with **MillionFiles-inCloud**

@@ -41,13 +41,13 @@ To update your S3 bucket with the changes you made to fs2, you only need to simp
 
     ![](../images/mod6ds1.png)
 
-5. Select the newest task execution from the list to monitor its progress.
-6. When the task completes, you should see that **3 files were transferred** and that the total data transferred was **1 MiB**.  The three files are the new file create above (which was 1 MiB in size), the manifest.lst file that was nmodified, and then the object in the S3 bucket representing the dir0001 folder, which needed to be updated because a new file was added.
+5. Select the newest task execution from the list to monitor its progress.  It will take a few minutes for the task to complete.
+6. When the task completes, you should see that **3 files were transferred** and that the total data transferred was **1 MiB**.  The three files are the new file create above (which was 1 MiB in size), the manifest.lst file that was modified, and then the object in the S3 bucket representing the dir0001 folder, which needed to be updated because a new file was added to it.
 7. Go to your S3 bucket and verify that you see the new file along with an updated timestamp on the manifest.lst file.
 
 #### 3. Compare execution times
 
-Although this task executed faster than the previous run, you may have noticed that the task spent a few minutes in the Preparing phase.  Run the following command to get the time spent preparing:
+Although this task executed faster than the previous run, you may have noticed that the task spent a few minutes in the Preparing phase.  Run the following command to get the time spent preparing (replacing the region and execution ID with your own values):
 
     ~$ aws datasync list-task-executions --region us-east-2 | grep exec-07e667d3c41fa8341
         "TaskExecutionArn": "arn:aws:datasync:us-east-2:--:task/task-00007d923f4357143/execution/exec-07e667d3c41fa8341",
@@ -94,8 +94,6 @@ Although this task executed faster than the previous run, you may have noticed t
     }
 
 
-Replace the region and execution IDs with the appropriate values.
-
 In the above, you can see that the task spent about **127 seconds** in the prepare phase.  Repeat the above commands but use the ID for the previous task execution.  How much time did your first task for **fs2** spend in the prepare phase?
 
 You will likely see a significant difference in times spent in the prepare phase.  While the first execution spent only a few seconds preparing, the second execution spent several minutes.  Why the difference?
@@ -108,7 +106,7 @@ Is there a way to reduce this time?
 
 One way to reduce the amount of time required for preparing files is to limit the scope of the files to be compared.  You could do this by creating a new task with a more precise source location, but that would mean copying all of your settings to a new task, and risk missing a configuration setting.  Another option is to use task-level include filters.
 
-Before doing another run, let's create more changes on in the dir0001 directory fs2.  Run the following commands:
+Before doing another run, let's create more changes in the dir0001 directory fs2.  Run the following commands:
 
     [ec2-user@ ~]$ cd /mnt/fs2/d0001/dir0001
     [ec2-user@ ~]$ dd if=/dev/urandom of=newfile2 bs=1M count=1
@@ -132,11 +130,11 @@ Once the task completes execution, go back to your S3 bucket and verify you see 
 
 Run the **describe-task-execution** command again, with the latest task execution id, to get the duration for the prepare phase.  How does this compare to the previous execution?
 
-You should see the prepare time has been reduced significantly.  This is because the DataSync task only scanned files in the /d0001/dir0001/ directory, which is only about 500 files.  Using include filters, you were able to significantly reduce the scope of the DataSync task, without have to use a new task.
+You should see the prepare time has been reduced significantly.  This is because the DataSync task only scanned files in the /d0001/dir0001/ directory, which is only about 500 files.  Using include filters, you were able to significantly reduce the scope of the DataSync task, without having to create a new task.
 
 ## Module Summary
 
-In this module, you re-ran the copy task for **fs2** to get incremental changes to the file system.  You saw how include filters can be used to limit the scope of an existing task and thus reduce overall processing times.
+In this module, you re-ran the copy task for **fs2** to get incremental changes to the file system.  You also saw how include filters can be used to limit the scope of an existing task and thus reduce overall processing times.
 
 In the next module, you will go through the steps to clean up resources from this workshop.
 
