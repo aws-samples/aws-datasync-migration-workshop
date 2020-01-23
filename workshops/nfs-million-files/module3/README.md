@@ -42,9 +42,9 @@ When you create a DataSync task, it can be configured to write logs to a CloudWa
 
 2. From your command-line terminal, run the following command to apply the policy to CloudWatch:
 
-        aws logs put-resource-policy --policy-name trustDataSync --policy-document file://<policy-file>
+        aws logs put-resource-policy --region <in-cloud-region> --policy-name trustDataSync --policy-document file://<policy-file>
 
-  where \<policy-file\> is the file on your local machine that was created in step #1 above.
+  where \<policy-file\> is the file on your local machine that was created in step #1 above and \<in-cloud-region\> is the AWS region you are using for your IN-CLOUD region.
 
 #### 2. Activate the DataSync agents
 

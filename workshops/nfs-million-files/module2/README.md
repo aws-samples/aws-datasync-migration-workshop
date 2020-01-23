@@ -25,7 +25,7 @@ In this module, you will browse the NFS server that was created in the previous 
 
 #### 2. Verify the datasets have been initialized
 
-Before continuing, you will need to wait for the datasets on the NFS server to be initialized.  The server will download three archives and then extract the archives to the three file systems.  The process will take about 10-15 minutes to complete.  Once the datasets are initialized, you will see a file named **datasets_ready** in the **/home/ec2_user** directory.
+Before continuing, you will need to wait for the datasets on the NFS server to be initialized.  The server will download three archives and then extract the archives to the three file systems.  The process will take about 10-15 minutes to complete.  Once the datasets are initialized, you will see a file named **datasets_ready** in the **/home/ec2-user** directory.
 
 #### 3. Browse the file systems
 

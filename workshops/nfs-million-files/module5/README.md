@@ -36,7 +36,7 @@ In this module, you will create three DataSync tasks - one per file system on th
 5. Click **Next**.
 6. Name the task **Copy FS1**.
 7. Set the _Verify data_ option to **Verify only the data transferred**.
-8. Configure the exclude patterns the same way you did for the test task.
+8. Add two exclude patterns: **\*/.htaccess** and **\*/index.html**
 9. For _Task logging_, select the **DataSyncLogs-MillionFiles-InCloud** log group from the drop-down.
 10. Click **Next** and verify all task settings are correct.
 11. Click **Create task**.
@@ -60,7 +60,7 @@ In this module, you will create three DataSync tasks - one per file system on th
 6. Name the task **Copy FS2**.
 7. Set the _Verify data_ option to **Verify only the data transferred**.
 8. Make sure _Queueing_ is set to **Enabled**.
-8. Configure the exclude patterns the same way you did for the test task.
+8. Add two exclude patterns: **\*/.htaccess** and **\*/index.html**
 17. For _Task logging_, select the **DataSyncLogs-MillionFiles-InCloud** log group from the drop-down.
 9. Click **Next** and verify all task settings are correct.
 10. Click **Create task**.
@@ -83,7 +83,7 @@ In this module, you will create three DataSync tasks - one per file system on th
 5. Click **Next**.
 6. Name the task **Copy FS3**.
 7. Set the _Verify data_ option to **Verify only the data transferred**.
-8. Configure the exclude patterns the same way you did for the test task.
+8. Add two exclude patterns: **\*/.htaccess** and **\*/index.html**
 17. For _Task logging_, select the **DataSyncLogs-MillionFiles-InCloud** log group from the drop-down.
 9. Click **Next** and verify all task settings are correct.
 10. Click **Create task**.
