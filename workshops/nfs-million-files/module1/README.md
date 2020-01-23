@@ -66,7 +66,9 @@ Upon completion, each CloudFormation stack will have a list of &quot;Outputs&quo
 
 On the CloudFormation page in the **ON-PREMISES** region, click on the **Outputs** tab, as shown in the image below.  You should see the following values listed:
 
+- **dataSyncAgent1PrivateIP** – This is the private IP address of the EC2 instance running the first DataSync agent.  You will use this when configuring exports on the NFS server.
 - **dataSyncAgent1PublicIP** – This is the public IP address of the EC2 instance running the first DataSync agent.  You will use this when activating this particular DataSync agent.
+- **dataSyncAgent2PrivateIP** – This is the private IP address of the EC2 instance running the second DataSync agent.  You will use this when configuring exports on the NFS server.
 - **dataSyncAgent2PublicIP** – This is the public IP address of the EC2 instance running the second DataSync agent.  You will use this when activating this particular DataSync agent.
 - **nfsServerPrivateIP** – This is the private IP address of the NFS server.  You will use this when creating a location for DataSync.
 

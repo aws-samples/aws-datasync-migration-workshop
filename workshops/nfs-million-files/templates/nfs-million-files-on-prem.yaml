@@ -321,6 +321,12 @@ Outputs:
   dataSyncAgent1PublicIP:
     Description: DataSync Agent 1 - Public IP Address
     Value: !GetAtt dataSyncAgent1.PublicIp
+  dataSyncAgent1PrivateIP:
+    Description: DataSync Agent 1 - Private IP Address
+    Value: !GetAtt dataSyncAgent1.PrivateIp
   dataSyncAgent2PublicIP:
     Description: DataSync Agent 2 - Public IP Address
     Value: !GetAtt dataSyncAgent2.PublicIp
+  dataSyncAgent2PrivateIP:
+    Description: DataSync Agent 2 - Private IP Address
+    Value: !GetAtt dataSyncAgent2.PrivateIp

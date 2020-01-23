@@ -76,7 +76,7 @@ You want to transfer data from all three file systems using DataSync.  To do so,
         /mnt/fs2 10.12.14.99(ro,no_root_squash) 10.12.14.16(ro,no_root_squash)
         /mnt/fs3 10.12.14.99(ro,no_root_squash) 10.12.14.16(ro,no_root_squash)
 
-  Replace the IP addresses above with the **private** IP address assigned to the EC2 instances for each DataSync agent.
+  Replace the IP addresses above with the corresponding **private** IP address assigned to the EC2 instances for each DataSync agent, as reported in the CloudFormation Outputs for the **ON-PREMISES** region.
 
 2. Run the following command to restart the NFS server and apply the export settings:
 
