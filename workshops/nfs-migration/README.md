@@ -41,6 +41,4 @@ This workshop consists of the following five modules:
 - **Module 4**  - One last incremental copy before cutover
 - **Module 5** - Cutover to File Gateway and shutdown the NFS server
 
-Jeff says hi!
-
 To get started, go to [Module 1](/workshops/nfs-migration/module1).
