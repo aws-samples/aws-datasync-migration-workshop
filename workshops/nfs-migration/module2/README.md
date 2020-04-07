@@ -81,7 +81,7 @@ On the left-side of the page, click **Locations** again.  You should now have tw
 5. Under _Destination location options_, select **Choose an existing location**.
 6. Under the _Existing locations_ drop-down, select the S3 bucket location you created previously.
 7. Click **Next.**
-8. Keep all options as-is and then click **Next.**
+8. Under the **Verify data** drop-down, select **Verify only the data transferred**. Keep all other options as-is and then click **Next.**
 9. Click **Create task.**
 
 #### 5. Run the task

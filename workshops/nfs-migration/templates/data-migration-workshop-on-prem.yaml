@@ -20,30 +20,43 @@ Metadata:
 
 # NOTE: Uncomment the following and all lines that reference the kp parameter
 # if you need a key pair for the various instances below
-#
-#   AWS::CloudFormation::Interface:
-#     ParameterGroups:
-#       - Label:
-#           default: Security
-#         Parameters:
-#           - kp
-#     ParameterLabels:
-#       kp:
-#         default: 'Access Key Pair:'
-#
-# Parameters:
-#   kp:
-#     Description: '(NOTE: If you don''t see a key in the list you will need to create
-#       one from the EC2 console in this region)'
-#     Type: AWS::EC2::KeyPair::KeyName
 
-# We use this to get the latest, correct AMI for the region we are in.
-# This avoids outdated AMIs.
-Fn::Transform:
-  Name: AWS::Include
-  Parameters:
-    Location: s3://storage-specialists-cf-templates/regional_ami_mapping.yaml
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      # - Label:
+      #     default: Security
+      #   Parameters:
+      #     - kp
+      - Label:
+          default: AMI IDs (do not edit)
+        Parameters:
+          - linuxAmi
+          - fgwAmi
+          - dsAmi
+    ParameterLabels:
+      # kp:
+      #   default: 'Access Key Pair:'
+      linuxAmi:
+        default: 'Linux'
+      fgwAmi:
+        default: 'File Gateway'
+      dsAmi:
+        default: 'DataSync'
 
+Parameters:
+  # kp:
+  #   Description: '(NOTE: If you don''t see a key in the list you will need to create
+  #     one from the EC2 console in this region)'
+  #   Type: AWS::EC2::KeyPair::KeyName
+  linuxAmi:
+    Type : 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+  fgwAmi:
+    Type : 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/storagegateway/ami/FILE_S3/latest'
+  dsAmi:
+    Type : 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/datasync/ami'
 
 Resources:
 
@@ -168,7 +181,7 @@ Resources:
   nfsServer:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: !FindInMap [RegionalAmiMap, !Ref "AWS::Region", AmazonLinux2]
+      ImageId: !Ref linuxAmi
       InstanceType: t2.micro
       IamInstanceProfile: !Ref 'nfsServerInstanceProfile'
       Tags:
@@ -208,7 +221,7 @@ Resources:
     Type: AWS::EC2::Instance
     DependsOn: nfsServer
     Properties:
-      ImageId: !FindInMap [RegionalAmiMap, !Ref "AWS::Region", AmazonLinux2]
+      ImageId: !Ref linuxAmi
       InstanceType: t2.micro
       Tags:
         - Key: Name
@@ -278,7 +291,7 @@ Resources:
   dataSyncAgent:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: !FindInMap [RegionalAmiMap, !Ref "AWS::Region", DataSync]
+      ImageId: !Ref dsAmi
       InstanceType: m5.2xlarge
       IamInstanceProfile: !Ref 'dataSyncAgentInstanceProfile'
       Tags:
@@ -344,7 +357,7 @@ Resources:
   fileGateway:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: !FindInMap [RegionalAmiMap, !Ref "AWS::Region", FileGateway]
+      ImageId: !Ref fgwAmi
       InstanceType: c4.2xlarge
       IamInstanceProfile: !Ref 'fileGatewayInstanceProfile'
       Tags:

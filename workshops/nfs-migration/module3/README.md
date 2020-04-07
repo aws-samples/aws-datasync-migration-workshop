@@ -57,7 +57,7 @@ Just as you activated the DataSync agent in the previous module, you need to per
 
         $ sudo mkdir /mnt/fgw
 
-1. Paste the Linux mount command from the previous step and replace &quot;[MountPath]&quot; with &quot;/mnt/fgw&quot;.   **You must run the command as sudo.**
+1. Copy the Linux mount command from the Storage Gateway file share page and replace &quot;[MountPath]&quot; with &quot;/mnt/fgw&quot;.   **You must run the command as sudo.**
 2. You should now have two NFS mount points on your Application server: one for the on-premises NFS server (mounted at /mnt/data) and one for the File Gateway (mounted at /mnt/fgw).
 
   ![](../images/mod3cli1.png)
