@@ -30,11 +30,9 @@ In this module, you will use CloudFormation scripts to deploy resources in two A
   | eu-central-1 | Frankfurt | [Launch in eu-central-1](https://console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/new?stackName=MillionFiles-OnPrem&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-million-files/nfs-million-files-on-prem.yaml) |
 
 2. Click **Next**  on the Create Stack page.
-3. Under the **Parameters** section, select an EC2 key pair to allow for SSH login to instances created by this stack.  Click **Next**.
+3. Under the **Parameters** section, select an EC2 key pair to allow for SSH login to instances created by this stack.  Do not edit the values for AMI IDs.  Click **Next**.
 5. Click **Next** again (skipping the Options and Advanced options sections).
-6. On the Review page, scroll to the bottom and check the boxes to acknowledge that CloudFormation will create IAM resources, then click  **Create stack**.
-
-  ![](../images/mod1cf1.png)
+6. On the Review page, scroll to the bottom and check the box to acknowledge that CloudFormation will create IAM resources, then click  **Create stack**.
 
 While the CloudFormation deployment progresses in the ON-PREMISES region, you can proceed to deploy resources for the IN-CLOUD region.
 

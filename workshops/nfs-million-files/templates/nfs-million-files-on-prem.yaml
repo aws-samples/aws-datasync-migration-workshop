@@ -24,23 +24,30 @@ Metadata:
            default: Security
          Parameters:
            - kp
+      - Label:
+          default: AMI IDs (do not edit)
+        Parameters:
+          - linuxAmi
+          - dsAmi
      ParameterLabels:
        kp:
          default: 'Access Key Pair:'
+      linuxAmi:
+        default: 'Linux'
+      dsAmi:
+        default: 'DataSync'
 
 Parameters:
    kp:
      Description: '(NOTE: If you don''t see a key in the list you will need to create
        one from the EC2 console in this region)'
      Type: AWS::EC2::KeyPair::KeyName
-
-# We use this to get the latest, correct AMI for the region we are in.
-# This avoids outdated AMIs.
-Fn::Transform:
-  Name: AWS::Include
-  Parameters:
-    Location: s3://storage-specialists-cf-templates/regional_ami_mapping.yaml
-
+  linuxAmi:
+    Type : 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+  dsAmi:
+    Type : 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/datasync/ami'
 
 Resources:
 
@@ -160,7 +167,7 @@ Resources:
   nfsServer:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: !FindInMap [RegionalAmiMap, !Ref "AWS::Region", AmazonLinux2]
+      ImageId: !Ref linuxAmi
       InstanceType: c5.4xlarge
       IamInstanceProfile: !Ref 'nfsServerInstanceProfile'
       Tags:
@@ -263,7 +270,7 @@ Resources:
   dataSyncAgent1:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: !FindInMap [RegionalAmiMap, !Ref "AWS::Region", DataSync]
+      ImageId: !Ref dsAmi
       InstanceType: m5.2xlarge
       IamInstanceProfile: !Ref 'dataSyncAgentInstanceProfile'
       Tags:
@@ -290,7 +297,7 @@ Resources:
   dataSyncAgent2:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: !FindInMap [RegionalAmiMap, !Ref "AWS::Region", DataSync]
+      ImageId: !Ref dsAmi
       InstanceType: m5.2xlarge
       IamInstanceProfile: !Ref 'dataSyncAgentInstanceProfile'
       Tags:
