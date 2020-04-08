@@ -31,13 +31,11 @@ In this module, you will use CloudFormation scripts to deploy resources in two A
   | eu-west-1 | Ireland | [Launch in eu-west-1](https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/new?stackName=DataMigrationWorkshop-onPremResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-on-prem.yaml) |
   | eu-central-1 | Frankfurt | [Launch in eu-central-1](https://console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/new?stackName=DataMigrationWorkshop-onPremResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-on-prem.yaml) |
 
-2. Click  **Next**  on the Create Stack page.
-3. Click **Next** (there are no stack parameters).
-4. Click  **Next**.
-5. Click  **Next**  Again. (skipping the Options and Advanced options sections)
-6. On the Review page, scroll to the bottom and check the boxes to acknowledge that CloudFormation will create IAM resources, then click  **Create stack**.
-
-  ![](../images/mod1cf1.png)
+2. Click **Next** on the Create Stack page.
+3. Click **Next** (there are no stack parameters that need to be modified).
+4. Click **Next**.
+5. Click **Next** again. (skipping the Options and Advanced options sections)
+6. On the Review page, scroll to the bottom and check the box to acknowledge that CloudFormation will create IAM resources, then click  **Create stack**.
 
 **Note:** Instances that are launched as part of this CloudFormation template may be in the initializing state for few minutes.
 
