@@ -19,29 +19,29 @@ Metadata:
       SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
   AWS::CloudFormation::Interface:
-     ParameterGroups:
-       - Label:
-           default: Security
-         Parameters:
-           - kp
+    ParameterGroups:
+      - Label:
+          default: Security
+        Parameters:
+          - kp
       - Label:
           default: AMI IDs (do not edit)
         Parameters:
           - linuxAmi
           - dsAmi
-     ParameterLabels:
-       kp:
-         default: 'Access Key Pair:'
+    ParameterLabels:
+      kp:
+        default: 'Access Key Pair:'
       linuxAmi:
         default: 'Linux'
       dsAmi:
         default: 'DataSync'
 
 Parameters:
-   kp:
-     Description: '(NOTE: If you don''t see a key in the list you will need to create
-       one from the EC2 console in this region)'
-     Type: AWS::EC2::KeyPair::KeyName
+  kp:
+    Description: '(NOTE: If you don''t see a key in the list you will need to create
+      one from the EC2 console in this region)'
+    Type: AWS::EC2::KeyPair::KeyName
   linuxAmi:
     Type : 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
     Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
