@@ -53,7 +53,9 @@ Hmm.  You copied the file from the NFS server to S3 using DataSync.  And the Fil
 
 In this case, the file was written to the S3 bucket via DataSync, **not** through the File Gateway share itself.  File Gateway is not aware that there are new objects in the bucket.  In order to see the new file on the Application server, you need to refresh the metadata cache on the File Gateway.
 
-Go to the in-cloud region management console and go to the **Storage Gateway** service.  On the left side of the page, click on **File shares** and select the NFS share from the list.  Click on the **Actions** button and select **Refresh cache** then click **Start**. In this case, you have a bucket with only a few hundred objects, so the refresh will be quick.  Note that on large buckets with many objects, a cache refresh can take quite a bit of time.  To reduce the scope of the refresh, you can use the API or CLI and limit the refresh to a specific directory.  You can also use CloudWatch events to monitor when a cache refresh completes.
+Go to the in-cloud region management console and go to the **Storage Gateway** service.  On the left side of the page, click on **File shares** and select the NFS share from the list.  Click on the **Actions** button and select **Refresh cache** then click **Start**.
+
+In this case, you have a bucket with only a few hundred objects, so the refresh will be quick.  Note that on large buckets with many objects, a cache refresh can take quite a bit of time.  To reduce the scope of the refresh, you can use the API or CLI and limit the refresh to a specific directory.  You can also use CloudWatch events to monitor when a cache refresh completes.
 
 Head back to the CLI for the Application server and repeat the &quot;ls /mnt/fgw&quot; command.  You should now see the new file.
 

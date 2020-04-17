@@ -18,9 +18,6 @@ Metadata:
       OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
       SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# NOTE: Uncomment the following and all lines that reference the kp parameter
-# if you need a key pair for the various instances below
-
   AWS::CloudFormation::Interface:
     ParameterGroups:
       # - Label:
@@ -132,13 +129,13 @@ Resources:
   # We use this so we can limit access on this port to the SG
   dmSecurityGroupIngress:
     Type: AWS::EC2::SecurityGroupIngress
+    DependsOn: dmSecurityGroup
     Properties:
       GroupId: !Ref 'dmSecurityGroup'
       IpProtocol: tcp
       ToPort: '2049'
       FromPort: '2049'
       SourceSecurityGroupId: !Ref 'dmSecurityGroup'
-    DependsOn: dmSecurityGroup
 
 
   nfsServerInstanceProfile:
@@ -159,6 +156,8 @@ Resources:
               Service:
                 - ec2.amazonaws.com
         Version: '2012-10-17'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
   nfsServerRolePolicy:
     Type: AWS::IAM::Policy
     Properties:
@@ -180,6 +179,29 @@ Resources:
         - !Ref 'nfsServerIamRole'
   nfsServer:
     Type: AWS::EC2::Instance
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT30M
+        Count: 1
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          files:
+            /opt/aws/cfn/initdata.sh:
+              content: !Sub |
+                #!/bin/bash
+                mkdir -p /media/data/images
+                for i in {00001..00200}; do
+                  aws s3 cp s3://aft-vbi-pds/bin-images/$i.jpg /media/data/images/ >> /tmp/sync
+                done
+                echo "/media/data *(rw,no_root_squash)" > /tmp/exports
+                sudo cp /tmp/exports /etc/exports
+                sudo service nfs restart
+          commands:
+            1-initData:
+              command: "bash /opt/aws/cfn/initdata.sh"
+            2-finishUp:
+              command: !Sub "/opt/aws/bin/cfn-signal -e 0 --stack ${AWS::StackId} --resource nfsServer --region ${AWS::Region}"
     Properties:
       ImageId: !Ref linuxAmi
       InstanceType: t2.micro
@@ -191,7 +213,7 @@ Resources:
             - - NfsServer (
               - !Ref 'AWS::StackName'
               - )
-#      KeyName: !Ref 'kp'
+      # KeyName: !Ref 'kp'
       InstanceInitiatedShutdownBehavior: terminate
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
@@ -205,24 +227,18 @@ Resources:
           GroupSet:
             - !Ref 'dmSecurityGroup'
           SubnetId: !Ref 'dmSubnet1'
-      UserData: !Base64
-        Fn::Join:
-          - ''
-          - - "#!/bin/bash\n"
-            - "mkdir -p /media/data/images\n"
-            - "for i in {00001..00200}; do\n"
-            - " aws s3 cp s3://aft-vbi-pds/bin-images/${i}.jpg /media/data/images/ >> /tmp/sync\n"
-            - "done\n"
-            - "echo \"/media/data *(rw,no_root_squash)\" > /tmp/exports\n"
-            - "sudo cp /tmp/exports /etc/exports\n"
-            - "sudo service nfs restart\n"
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            /opt/aws/bin/cfn-init -v -s ${AWS::StackId} -r nfsServer --region ${AWS::Region}
 
   appServer:
     Type: AWS::EC2::Instance
-    DependsOn: nfsServer
     Properties:
       ImageId: !Ref linuxAmi
       InstanceType: t2.micro
+      IamInstanceProfile: !Ref 'nfsServerInstanceProfile'
       Tags:
         - Key: Name
           Value: !Join
@@ -230,7 +246,7 @@ Resources:
             - - ApplicationServer (
               - !Ref 'AWS::StackName'
               - )
-#      KeyName: !Ref 'kp'
+      # KeyName: !Ref 'kp'
       InstanceInitiatedShutdownBehavior: terminate
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
@@ -301,7 +317,7 @@ Resources:
             - - DataSyncAgent (
               - !Ref 'AWS::StackName'
               - )
-#      KeyName: !Ref 'kp'
+      # KeyName: !Ref 'kp'
       InstanceInitiatedShutdownBehavior: stop
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
@@ -367,7 +383,7 @@ Resources:
             - - FileGateway (
               - !Ref 'AWS::StackName'
               - )
-#      KeyName: !Ref 'kp'
+      # KeyName: !Ref 'kp'
       InstanceInitiatedShutdownBehavior: stop
       BlockDeviceMappings:
         - DeviceName: /dev/xvda

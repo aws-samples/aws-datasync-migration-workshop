@@ -59,7 +59,7 @@ While the CloudFormation deployment progresses in the on-premises region, you ca
 4. Click  **Next**  again. (skipping the Options and Advanced options sections)
 5. On the Review page, scroll to the bottom and check the box to acknowledge that CloudFormation will create IAM resources, then click  **Create stack**.
 
-Wait for the CloudFormation stacks in each region to reach the CREATE\_COMPLETE state before proceeding to the next steps.  It should take about 3 to 5 minutes for both CloudFormation stacks to complete.
+Wait for the CloudFormation stacks in each region to reach the CREATE\_COMPLETE state before proceeding to the next steps.  It should take about 10 minutes for both CloudFormation stacks to complete.
 
 **NOTE:** If a stack fails to deploy because an EC2 instance type is not available in a particular availability zone, delete the stack and retry in the same region or in a different region.
 
@@ -89,13 +89,11 @@ On the CloudFormation page in the **in-cloud** region, click on the **Outputs** 
 2. Select  **Instances**  from the menu on the left.
 3. Wait until the state of the four new instances (ApplicationServer, FileGateway, NfsServer, and DataSyncAgent) shows as _running_ and all Status Checks have completed (i.e. **not** in _Initializing_ state).
 4. Right-click on the **ApplicationServer** instance and select  **Connect** from the menu.
-5. From the dialog box, select the EC2 Instance Connect option, as shown below:
+5. From the dialog box, select the **Session Manager** option, as shown below:
 
   ![](../images/mod1ssh1.png)
 
-6. For the **User name** field, enter "ec2-user", then click **Connect**.
-
-A new dialog box or tab on your browser should appear, providing you with a command line interface (CLI).  Keep this open - you will use the command line on the Application server throughout this workshop.
+6. Click **Connect**.  A new tab will be opened in your browser with a command line interface (CLI) to the Application server. Keep this tab open - you will use the command line on the Application server throughout this workshop.
 
 ## Validation Step
 

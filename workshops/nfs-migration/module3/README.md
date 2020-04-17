@@ -44,7 +44,7 @@ Just as you activated the DataSync agent in the previous module, you need to per
 3. Select **NFS** as the access method and make sure your gateway from the previous step is selected.
 4. Click **Next**.
 5. Keep the default settings, then click **Next**
-6. Under the **Allowed clients** section, click **Edit** and change &quot;0.0.0.0/0&quot; to the **Private IP Address** of the Application server.  This will only allow the Application server to access the NFS file share on the gateway.  Click the **Close** button.
+6. Under the **Allowed clients** section, click **Edit** and change &quot;0.0.0.0/0&quot; to the **Private IP Address** of the Application server, followed by "/32".  This will only allow the Application server to access the NFS file share on the gateway.  Click the **Close** button.
 7. Under the **Mount options** section, change the **Squash level** to &quot;No root squash&quot;.  Click the **Close** button.
 8. Click **Create file share**.
 9. Select the check box next to the new file share and note the mount instructions.
@@ -53,7 +53,7 @@ Just as you activated the DataSync agent in the previous module, you need to per
 
 #### 3. Mount the NFS share on the Application server
 
-1. Return to the CLI for the Application server and run the following command to create a new mount point for the File Gateway share (if the CLI is frozen, close the window and reconnect using the steps in module 1):
+1. Return to the CLI for the Application server and run the following command to create a new mount point for the File Gateway share:
 
         $ sudo mkdir /mnt/fgw
 

@@ -26,17 +26,18 @@ Although the agent instance was created in the previous module, before it can be
 
 1. Go to the AWS Management console page in the **in-cloud** region and click  **Services**  then select  **DataSync.**
 2. If no DataSync agents exist, click the **Get started** button, otherwise click the **Create agent** button.
-3. Leave the Service endpoint as **"Public service endpoints"**.
+3. The EC2 instance that will run the DataSync agent has already been deployed in the **on-premises** region.
+4. Leave the Service endpoint as **"Public service endpoints"**.
 
-4. Under the **Activation key** section, enter the **Public IP address** of the DataSync agent instance running in the on-premises region.  You can get this IP address from the CloudFormation outputs in the on-premises region.  You use the public IP address here because the agent needs to be accessible by your web browser for activation.  Enter the IP address of the agent as shown below, then click **Get key.**
+5. Under the **Activation key** section, enter the **Public IP address** of the DataSync agent instance running in the on-premises region.  You can get this IP address from the CloudFormation outputs in the on-premises region.  You use the public IP address here because the agent needs to be accessible by your web browser for activation.  Enter the IP address of the agent as shown below, then click **Get key.**
 
   ![](../images/mod2ds1.png)
 
-5. Once the activation is successful, you will be shown the activation key and will be prompted for further information.
+6. Once the activation is successful, you will be shown the activation key and will be prompted for further information.
 
   ![](../images/mod2ds2.png)
 
-6. Enter an Agent name if desired, then click **Create agent**.
+7. Enter an Agent name if desired, then click **Create agent**.
 
 #### 2. Create NFS location
 
@@ -57,6 +58,7 @@ Although the agent instance was created in the previous module, before it can be
 
 2. Create a location for the S3 bucket.  Select **Amazon S3 bucket** from the _Location type_ drop-down.
 3. From the _S3 bucket_ drop-down, select the S3 bucket that starts with **data-migration-workshop** and is followed by a long GUID.
+4. Keep the S3 storage class as **Standard**.
 4. Under _Folder_, enter &quot;/&quot;.  This will copy all files to the top-level of the bucket.
 5. Under _IAM role_, select the S3 bucket IAM role that starts with **DataMigrationWorkshop-inCloud**.  The full name of the role can be found in the outputs for the in-cloud CloudFormation stack.
 
