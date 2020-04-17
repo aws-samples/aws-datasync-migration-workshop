@@ -25,6 +25,11 @@ Resources:
   s3Bucket:
     Type: AWS::S3::Bucket
     Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: True
+        BlockPublicPolicy: True
+        IgnorePublicAcls: True
+        RestrictPublicBuckets: True
       BucketName: !Join
       - "-"
       - - "million-files-nfs"

@@ -21,13 +21,9 @@ In this module, you will browse the NFS server that was created in the previous 
 #### 1. Login to the NFS server
 
 1. Go to the AWS Management console page in the **ON-PREMISES** region and click **Services** then select **EC2**.
-2. Click on the list of instances and then select the NFS Server.  Click on the **Connect** button and follow the instructions to create an SSH connection to the NFS server.
+2. Click on the list of instances and then select the NFS Server.  Click on the **Connect** button and follow the instructions to connect to Session Manager or to create an SSH connection to the NFS server.
 
-#### 2. Verify the datasets have been initialized
-
-Before continuing, you will need to wait for the datasets on the NFS server to be initialized.  The server will download three archives and then extract the archives to the three file systems.  The process will take about 10-15 minutes to complete.  Once the datasets are initialized, you will see a file named **datasets_ready** in the **/home/ec2-user** directory.
-
-#### 3. Browse the file systems
+#### 2. Browse the file systems
 
 There are three 200 GiB EBS volumes attached to the NFS server.  Each volume has been formatted with an XFS file system and pre-populated with data from the previous step.
 
@@ -66,7 +62,7 @@ There are three 200 GiB EBS volumes attached to the NFS server.  Each volume has
 
   These commands show there are 50 folders in fs1, each containing 20 sub-folders.  Each sub-folder contains 500 files along with three extra files: **.htaccess, index.html, manifest.lst.**  The other file systems are similar, except that fs3 has 100 top-level folders, rather than 50.  For this workshop, you will copy all files and directories to your S3 bucket except for .htaccess and index.html.
 
-#### 4. Configure the NFS exports
+#### 3. Configure the NFS exports
 
 You want to transfer data from all three file systems using DataSync.  To do so, you will need to create three NFS exports (aka file shares), one per file system.  On this version of Linux, you do this by modifying the **/etc/exports** file.
 
