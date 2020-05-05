@@ -28,6 +28,14 @@ and other tools and services to monitor performance and transfer results.
 
 ![](images/fullarch.png)
 
+## Topics covered
+
+- Deploying resources using CloudFormation
+- Copying data to Amazon S3 using DataSync
+- Performing incremental data transfers with DataSync
+- Accessing data stored in an S3 bucket using File Gateway
+- Using the Storage Gateway RefreshCache API
+
 ## Prerequisites
 
 #### AWS Account
@@ -36,23 +44,31 @@ Because this is an advanced-level workshop, it is expected that you are familiar
 
 In order to complete this workshop, you will need an AWS account with rights to create AWS IAM roles, EC2 instances, AWS DataSync objects, and CloudFormation stacks in the AWS regions you select.
 
-It will cost approximately **15 USD** to run this workshop.  It is recommended that you follow the cleanup instructions once you have completed the workshop to remove all deployed resources and limit ongoing costs to your AWS account.
-
 #### Software
 
 - **Internet Browser**  – It is recommended that you use the latest version of Chrome or Firefox
 - **AWS CLI** - You should have the latest version of the AWS CLI deployed in your working environment
 
+## Cost
+
+It will cost approximately **15.00 USD** to run this workshop.  It is recommended that you follow the cleanup instructions once you have completed the workshop to remove all deployed resources and limit ongoing costs to your AWS account.
+
+## Related workshops
+
+- [NFS server migration using AWS DataSync and Storage Gateway](https://github.com/aws-samples/aws-datasync-migration-workshop/blob/master/workshops/nfs-migration)
+- [Migrate to FSx Windows File Server using AWS DataSync](https://github.com/aws-samples/aws-datasync-fsx-windows-migration)
+- [Get hands-on with online data migration options to simplify & accelerate your journey to AWS](https://github.com/aws-samples/aws-online-data-migration-workshop)
+
 ## Workshop Modules
 
 This workshop consists of the following modules:
 
-- **Module 1** - Deploy resources in the on-premises and in-cloud regions
-- **Module 2** - Configure the NFS server
-- **Module 3** - Setup CloudWatch and activate DataSync agents
-- **Module 4** - Run a test transfer to validate network and performance
-- **Module 5** - Run the full transfer
-- **Module 6** - Perform an incremental transfer
-- **Module 7** - Workshop clean-up
+- [Module 1](/workshops/nfs-million-files/module1) - Deploy resources in the on-premises and in-cloud regions
+- [Module 2](/workshops/nfs-million-files/module2) - Configure the NFS server
+- [Module 3](/workshops/nfs-million-files/module3) - Setup CloudWatch and activate DataSync agents
+- [Module 4](/workshops/nfs-million-files/module4) - Run a test transfer to validate network and performance
+- [Module 5](/workshops/nfs-million-files/module5) - Run the full transfer
+- [Module 6](/workshops/nfs-million-files/module6) - Perform an incremental transfer
+- [Module 7](/workshops/nfs-million-files/module7) - Workshop clean-up
 
 To get started, go to [Module 1](/workshops/nfs-million-files/module1).

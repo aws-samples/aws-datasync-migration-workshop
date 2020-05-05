@@ -17,3 +17,8 @@ To run through each workshop, you will need an AWS Account, preferrably with Adm
 
 - [NFS server migration using AWS DataSync and Storage Gateway](/workshops/nfs-migration)
 - [Migrate millions of files using AWS DataSync](/workshops/nfs-million-files)
+
+### Related Workshops
+
+- [Migrate to FSx Windows File Server using AWS DataSync](https://github.com/aws-samples/aws-datasync-fsx-windows-migration)
+- [Get hands-on with online data migration options to simplify & accelerate your journey to AWS](https://github.com/aws-samples/aws-online-data-migration-workshop)
