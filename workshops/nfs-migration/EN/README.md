@@ -9,12 +9,6 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 
 ---
 
-## Language Support
-
-This workshop is available in the following languages.  Click a link below to begin the workshop.
-
-- [English](EN/)
-
 ## Workshop scenario
 
 In your data center, you have an NFS server that is starting to age out.  Most of the data on the server is several years old and is only accessed for reading occasionally.  There are new files being written to the server but not very often.  To reduce your data center footprint and to free up resources, you would like to move the data on the NFS server into the cloud.  However, you cannot yet move your application servers that access the NFS data – those need to stay on-premises to minimize latency for your users.
@@ -57,10 +51,10 @@ It will cost approximately **3.00 USD** to run this workshop.  It is recommended
 
 This workshop consists of the following five modules:
 
-- [Module 1](/workshops/nfs-migration/module1)  - Deploy resources in the on-premises and in-cloud regions
-- [Module 2](/workshops/nfs-migration/module2) - Initial file copy to S3 using DataSync
-- [Module 3](/workshops/nfs-migration/module3)  - Access S3 bucket on-premises using File Gateway
-- [Module 4](/workshops/nfs-migration/module4)  - One last incremental copy before cutover
-- [Module 5](/workshops/nfs-migration/module5) - Cutover to File Gateway and shutdown the NFS server
+- [Module 1](module1/)  - Deploy resources in the on-premises and in-cloud regions
+- [Module 2](module2/) - Initial file copy to S3 using DataSync
+- [Module 3](module3/)  - Access S3 bucket on-premises using File Gateway
+- [Module 4](module4/)  - One last incremental copy before cutover
+- [Module 5](module5/) - Cutover to File Gateway and shutdown the NFS server
 
-To get started, go to [Module 1](/workshops/nfs-migration/module1).
+To get started, go to [Module 1](module1/).

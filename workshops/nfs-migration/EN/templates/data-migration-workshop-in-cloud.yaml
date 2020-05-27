@@ -1,0 +1,88 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS DataSync Workshop - NFS Migration - In-Cloud Region
+Metadata:
+  License:
+    Description: |
+      Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+      Permission is hereby granted, free of charge, to any person obtaining a copy of this
+      software and associated documentation files (the "Software"), to deal in the Software
+      without restriction, including without limitation the rights to use, copy, modify,
+      merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+      permit persons to whom the Software is furnished to do so.
+
+      THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+      INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+      PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+      HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+      OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+      SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Resources:
+
+  # We use the GUID from the ARN of the stack ID to generate
+  # a unique bucket name
+  s3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: True
+        BlockPublicPolicy: True
+        IgnorePublicAcls: True
+        RestrictPublicBuckets: True
+      BucketName: !Join
+      - "-"
+      - - "data-migration-workshop"
+        - !Select
+          - 2
+          - !Split
+            - "/"
+            - !Ref "AWS::StackId"
+
+  # Give the role a friendly name as the workshop user will need to
+  # reference it when creating DataSync tasks.
+  s3BucketIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - datasync.amazonaws.com
+        Version: '2012-10-17'
+  s3BucketRolePolicy:
+    Type: AWS::IAM::Policy
+    DependsOn: s3Bucket
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Resource: !GetAtt s3Bucket.Arn
+            Action:
+              - s3:GetBucketLocation
+              - s3:ListBucket
+              - s3:ListBucketMultipartUploads
+              - s3:HeadBucket
+          - Effect: Allow
+            Resource: !Join [ "/", [ !GetAtt s3Bucket.Arn, "*" ] ]
+            Action:
+              - s3:AbortMultipartUpload
+              - s3:DeleteObject
+              - s3:GetObject
+              - s3:ListMultipartUploadParts
+              - s3:PutObject
+        Version: '2012-10-17'
+      PolicyName: policy
+      Roles:
+        - !Ref 's3BucketIamRole'
+
+Outputs:
+  bucketName:
+    Description: S3 Bucket Name
+    Value: !Ref 's3Bucket'
+  bucketRoleForDataSync:
+    Description: S3 Bucket Role for DataSync
+    Value: !Ref 's3BucketIamRole'

@@ -1,0 +1,418 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS DataSync Workshop - NFS Migration - On-Premises Region
+Metadata:
+  License:
+    Description: |
+      Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+      Permission is hereby granted, free of charge, to any person obtaining a copy of this
+      software and associated documentation files (the "Software"), to deal in the Software
+      without restriction, including without limitation the rights to use, copy, modify,
+      merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+      permit persons to whom the Software is furnished to do so.
+
+      THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+      INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+      PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+      HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+      OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+      SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      # - Label:
+      #     default: Security
+      #   Parameters:
+      #     - kp
+      - Label:
+          default: AMI IDs (do not edit)
+        Parameters:
+          - linuxAmi
+          - fgwAmi
+          - dsAmi
+    ParameterLabels:
+      # kp:
+      #   default: 'Access Key Pair:'
+      linuxAmi:
+        default: 'Linux'
+      fgwAmi:
+        default: 'File Gateway'
+      dsAmi:
+        default: 'DataSync'
+
+Parameters:
+  # kp:
+  #   Description: '(NOTE: If you don''t see a key in the list you will need to create
+  #     one from the EC2 console in this region)'
+  #   Type: AWS::EC2::KeyPair::KeyName
+  linuxAmi:
+    Type : 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+  fgwAmi:
+    Type : 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/storagegateway/ami/FILE_S3/latest'
+  dsAmi:
+    Type : 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/datasync/ami'
+
+Resources:
+
+  # Create a dedicated VPC with internet connectivity
+  dmVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.11.12.0/24
+      EnableDnsSupport: 'true'
+      EnableDnsHostnames: 'true'
+      InstanceTenancy: default
+      Tags:
+      - Key: Name
+        Value: DataMigrationWorkshopVPC
+  dmSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref 'dmVPC'
+      CidrBlock: 10.11.12.0/24
+      MapPublicIpOnLaunch: 'True'
+      Tags:
+      - Key: Name
+        Value: DataMigrationWorkshopSubnet1
+  dmInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+      - Key: Name
+        Value: DataMigrationWorkshopIGW
+  dmAttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref 'dmVPC'
+      InternetGatewayId: !Ref 'dmInternetGateway'
+  dmRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref 'dmVPC'
+      Tags:
+      - Key: Name
+        Value: DataMigrationWorkshopRouteTable
+  dmSubnet1RouteAssociaton:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref 'dmSubnet1'
+      RouteTableId: !Ref 'dmRouteTable'
+  dmRoutetoInternet:
+    Type: AWS::EC2::Route
+    DependsOn: dmInternetGateway
+    Properties:
+      RouteTableId: !Ref 'dmRouteTable'
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref 'dmInternetGateway'
+
+  # We use the same security group for all four resources.  Technically port 80
+  # isn't needed for the NFS server and the application server, but nothing is
+  # listening on those ports on those servers.
+  dmSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Data Migration Workshop - Security Group for all resources
+      VpcId: !Ref 'dmVPC'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: '0.0.0.0/0'
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: '0.0.0.0/0'
+
+  # We use this so we can limit access on this port to the SG
+  dmSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    DependsOn: dmSecurityGroup
+    Properties:
+      GroupId: !Ref 'dmSecurityGroup'
+      IpProtocol: tcp
+      ToPort: '2049'
+      FromPort: '2049'
+      SourceSecurityGroupId: !Ref 'dmSecurityGroup'
+
+
+  nfsServerInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref 'nfsServerIamRole'
+  nfsServerIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+        Version: '2012-10-17'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+  nfsServerRolePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:ListBucket
+            Resource:
+              - arn:aws:s3:::aft-vbi-pds
+          - Effect: Allow
+            Action:
+              - s3:GetObject
+            Resource:
+              - arn:aws:s3:::aft-vbi-pds/*
+        Version: '2012-10-17'
+      PolicyName: policy
+      Roles:
+        - !Ref 'nfsServerIamRole'
+  nfsServer:
+    Type: AWS::EC2::Instance
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT30M
+        Count: 1
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          files:
+            /opt/aws/cfn/initdata.sh:
+              content: !Sub |
+                #!/bin/bash
+                mkdir -p /media/data/images
+                for i in {00001..00200}; do
+                  aws s3 cp s3://aft-vbi-pds/bin-images/$i.jpg /media/data/images/ >> /tmp/sync
+                done
+                echo "/media/data *(rw,no_root_squash)" > /tmp/exports
+                sudo cp /tmp/exports /etc/exports
+                sudo service nfs restart
+          commands:
+            1-initData:
+              command: "bash /opt/aws/cfn/initdata.sh"
+            2-finishUp:
+              command: !Sub "/opt/aws/bin/cfn-signal -e 0 --stack ${AWS::StackId} --resource nfsServer --region ${AWS::Region}"
+    Properties:
+      ImageId: !Ref linuxAmi
+      InstanceType: t2.micro
+      IamInstanceProfile: !Ref 'nfsServerInstanceProfile'
+      Tags:
+        - Key: Name
+          Value: !Join
+            - ''
+            - - NfsServer (
+              - !Ref 'AWS::StackName'
+              - )
+      # KeyName: !Ref 'kp'
+      InstanceInitiatedShutdownBehavior: terminate
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: '8'
+            DeleteOnTermination: 'true'
+            VolumeType: gp2
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: 'true'
+          DeviceIndex: '0'
+          GroupSet:
+            - !Ref 'dmSecurityGroup'
+          SubnetId: !Ref 'dmSubnet1'
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            /opt/aws/bin/cfn-init -v -s ${AWS::StackId} -r nfsServer --region ${AWS::Region}
+
+  appServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref linuxAmi
+      InstanceType: t2.micro
+      IamInstanceProfile: !Ref 'nfsServerInstanceProfile'
+      Tags:
+        - Key: Name
+          Value: !Join
+            - ''
+            - - ApplicationServer (
+              - !Ref 'AWS::StackName'
+              - )
+      # KeyName: !Ref 'kp'
+      InstanceInitiatedShutdownBehavior: terminate
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: '8'
+            DeleteOnTermination: 'true'
+            VolumeType: gp2
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: 'true'
+          DeviceIndex: '0'
+          GroupSet:
+            - !Ref 'dmSecurityGroup'
+          SubnetId: !Ref 'dmSubnet1'
+      UserData: !Base64
+        Fn::Join:
+          - ''
+          - - "#!/bin/bash\n"
+            - "sudo mkdir /mnt/data\n"
+
+
+  dataSyncAgentInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref 'dataSyncAgentIamRole'
+  dataSyncAgentIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+        Version: '2012-10-17'
+  dataSyncAgentRolePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - datasync:*
+            Resource:
+              - '*'
+          - Effect: Allow
+            Action:
+              - iam:PassRole
+            Resource:
+              - '*'
+        Version: '2012-10-17'
+      PolicyName: policy
+      Roles:
+        - !Ref 'dataSyncAgentIamRole'
+  dataSyncAgent:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref dsAmi
+      InstanceType: m5.2xlarge
+      IamInstanceProfile: !Ref 'dataSyncAgentInstanceProfile'
+      Tags:
+        - Key: Name
+          Value: !Join
+            - ''
+            - - DataSyncAgent (
+              - !Ref 'AWS::StackName'
+              - )
+      # KeyName: !Ref 'kp'
+      InstanceInitiatedShutdownBehavior: stop
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: '80'
+            DeleteOnTermination: 'true'
+            VolumeType: gp2
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: 'true'
+          DeviceIndex: '0'
+          GroupSet:
+            - !Ref 'dmSecurityGroup'
+          SubnetId: !Ref 'dmSubnet1'
+
+
+  fileGatewayInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref 'fileGatewayIamRole'
+  fileGatewayIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+        Version: '2012-10-17'
+  fileGatewayRolePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - storagegateway:*
+            Resource:
+              - '*'
+          - Effect: Allow
+            Action:
+              - iam:PassRole
+            Resource:
+              - '*'
+        Version: '2012-10-17'
+      PolicyName: policy
+      Roles:
+        - !Ref 'fileGatewayIamRole'
+  fileGateway:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref fgwAmi
+      InstanceType: c4.2xlarge
+      IamInstanceProfile: !Ref 'fileGatewayInstanceProfile'
+      Tags:
+        - Key: Name
+          Value: !Join
+            - ''
+            - - FileGateway (
+              - !Ref 'AWS::StackName'
+              - )
+      # KeyName: !Ref 'kp'
+      InstanceInitiatedShutdownBehavior: stop
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: '80'
+            DeleteOnTermination: 'true'
+            VolumeType: gp2
+        - DeviceName: /dev/xvdc
+          Ebs:
+            VolumeSize: '300'
+            DeleteOnTermination: 'true'
+            VolumeType: gp2
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: 'true'
+          DeviceIndex: '0'
+          GroupSet:
+            - !Ref 'dmSecurityGroup'
+          SubnetId: !Ref 'dmSubnet1'
+
+Outputs:
+  nfsServerPrivateIP:
+    Description: NFS Server Private IP Address
+    Value: !GetAtt nfsServer.PrivateIp
+  appServerPrivateIP:
+    Description: Application Server Private IP Address
+    Value: !GetAtt appServer.PrivateIp
+  dataSyncAgentPublicIP:
+    Description: DataSync Agent Public IP Address
+    Value: !GetAtt dataSyncAgent.PublicIp
+  fileGatewayPublicIP:
+    Description: File Gateway Public IP Address
+    Value: !GetAtt fileGateway.PublicIp

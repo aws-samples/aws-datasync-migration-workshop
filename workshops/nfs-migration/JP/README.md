@@ -9,12 +9,6 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 
 ---
 
-## Language Support
-
-This workshop is available in the following languages.  Click a link below to begin the workshop.
-
-- [English](EN/)
-
 ## Workshop scenario
 
 In your data center, you have an NFS server that is starting to age out.  Most of the data on the server is several years old and is only accessed for reading occasionally.  There are new files being written to the server but not very often.  To reduce your data center footprint and to free up resources, you would like to move the data on the NFS server into the cloud.  However, you cannot yet move your application servers that access the NFS data – those need to stay on-premises to minimize latency for your users.
