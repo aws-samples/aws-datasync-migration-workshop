@@ -51,10 +51,10 @@ It will cost approximately **3.00 USD** to run this workshop.  It is recommended
 
 This workshop consists of the following five modules:
 
-- [Module 1](/workshops/nfs-migration/module1)  - Deploy resources in the on-premises and in-cloud regions
-- [Module 2](/workshops/nfs-migration/module2) - Initial file copy to S3 using DataSync
-- [Module 3](/workshops/nfs-migration/module3)  - Access S3 bucket on-premises using File Gateway
-- [Module 4](/workshops/nfs-migration/module4)  - One last incremental copy before cutover
-- [Module 5](/workshops/nfs-migration/module5) - Cutover to File Gateway and shutdown the NFS server
+- [Module 1](module1/)  - Deploy resources in the on-premises and in-cloud regions
+- [Module 2](module2/) - Initial file copy to S3 using DataSync
+- [Module 3](module3/)  - Access S3 bucket on-premises using File Gateway
+- [Module 4](module4/)  - One last incremental copy before cutover
+- [Module 5](module5/) - Cutover to File Gateway and shutdown the NFS server
 
-To get started, go to [Module 1](/workshops/nfs-migration/module1).
+To get started, go to [Module 1](module1/).

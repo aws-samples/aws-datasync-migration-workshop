@@ -78,4 +78,4 @@ Remember that our ultimate goal in this workshop is to shut off the on-premises 
 
 In the next module, you&#39;ll do one more incremental copy before the final cutover to the File Gateway share.
 
-Go to [Module 4](module4/).
+Go to [Module 4](../module4/).
