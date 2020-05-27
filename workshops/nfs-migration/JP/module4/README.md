@@ -67,4 +67,4 @@ In this module you added a new file to the NFS server prior to cutover.  You the
 
 With all of the data copied from the NFS server to S3, you are now ready to perform the cutover.
 
-Go to [Module 5](/workshops/nfs-migration/module5).
+Go to [Module 5](module5/).
