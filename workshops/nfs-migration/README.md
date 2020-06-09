@@ -14,3 +14,4 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 This workshop is available in the following languages.  Click a link below to begin the workshop.
 
 - [English](EN/)
+- [Japanese](JP/)

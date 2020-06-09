@@ -1,6 +1,6 @@
 # **AWS DataSync**
 
-### NFS server migration using AWS DataSync and AWS Storage Gateway
+### AWS DataSyncとAWS Storage Gatewayを使ったNFSサーバーマイグレーション
 
 © 2019 Amazon Web Services, Inc. and its affiliates. All rights reserved.
 This sample code is made available under the MIT-0 license. See the LICENSE file.
@@ -9,107 +9,108 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 
 ---
 
-# Module 1
-## Deploy resources in the on-premises and in-cloud regions
+# モジュール 1
+## オンプレミスとin-cloudリージョンへのリソースのデプロイ
 
-In this module, you will use CloudFormation scripts to deploy resources in two AWS regions: one that represents the on-premises environment, and one for the in-cloud environment.  Once all resources have been deployed, you will mount an export from the NFS server on the Application server and verify existing files.
+このモジュールでは、２つのAWSリージョンにリソースをデプロイするためにクラウドフォーメーションスクリプトを使用します。１つはオンプレミス環境を擬似したリージョン、もう１つはin-cloudリージョンです。全てのリソースのデプロイが完了すると、アプリケーションサーバーからNFSのExportをマウントし、その中のファイルを確認する事が出来ます。
 
 ![](../images/mod1arch.png)
 
-## Module Steps
+## このモジュールの手順
 
-#### 1. Deploy AWS resources for the on-premises region
+#### 1. オンプレミスリージョンへのリソースのデプロイ
 
-1. Click one of the launch links in the table below to deploy the **on-premises** resources using CloudFormation.  To avoid errors during deployment, select a region in which you have previously created AWS resources.
+1. クラウドフォーメーションを使用して**on-premises**リソースをデプロイするために、以下の中からリンクを選択し、クリックして下さい。 デプロイ中のエラーを回避するために、以前にリソースを作成した事の有るリージョンの選択を推奨します。
 
-  | **Region Code** | **Region Name** | **Launch** |
+  | **リージョンコード** | **リージョン名** | **起動リンク** |
   | --- | --- | --- |
-  | us-west-1 | US West (N. California) | [Launch in us-west-1](https://console.aws.amazon.com/cloudformation/home?region=us-west-1#/stacks/new?stackName=DataMigrationWorkshop-onPremResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-on-prem.yaml) |
-  | us-west-2 | US West (Oregon) | [Launch in us-west-2](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=DataMigrationWorkshop-onPremResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-on-prem.yaml) |
-  | us-east-1 | US East (N. Virginia) | [Launch in us-east-1](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=DataMigrationWorkshop-onPremResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-on-prem.yaml) |
-  | us-east-2 | US East (Ohio) | [Launch in us-east-2](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=DataMigrationWorkshop-onPremResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-on-prem.yaml) |
-  | eu-west-1 | Ireland | [Launch in eu-west-1](https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/new?stackName=DataMigrationWorkshop-onPremResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-on-prem.yaml) |
-  | eu-central-1 | Frankfurt | [Launch in eu-central-1](https://console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/new?stackName=DataMigrationWorkshop-onPremResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-on-prem.yaml) |
+  | us-west-1 | US West (N. California) | [us-west-1へデプロイ](https://console.aws.amazon.com/cloudformation/home?region=us-west-1#/stacks/new?stackName=DataMigrationWorkshop-onPremResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-on-prem.yaml) |
+  | us-west-2 | US West (Oregon) | [us-west-2へデプロイ](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=DataMigrationWorkshop-onPremResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-on-prem.yaml) |
+  | us-east-1 | US East (N. Virginia) | [us-east-1へデプロイ](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=DataMigrationWorkshop-onPremResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-on-prem.yaml) |
+  | us-east-2 | US East (Ohio) | [us-east-2へデプロイ](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=DataMigrationWorkshop-onPremResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-on-prem.yaml) |
+  | eu-west-1 | Ireland | [eu-west-1へデプロイ](https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/new?stackName=DataMigrationWorkshop-onPremResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-on-prem.yaml) |
+  | eu-central-1 | Frankfurt | [eu-central-1へデプロイ](https://console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/new?stackName=DataMigrationWorkshop-onPremResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-on-prem.yaml) |
 
-2. Click **Next** on the Create Stack page.
-3. Click **Next** (there are no stack parameters that need to be modified).
-4. Click **Next**.
-5. Click **Next** again. (skipping the Options and Advanced options sections)
-6. On the Review page, scroll to the bottom and check the box to acknowledge that CloudFormation will create IAM resources, then click  **Create stack**.
+2. Create Stackページで**Next**をクリック。
+3. **Next**をクリック (変更する必要の有るスタックパラメータは有りません)。
+4. **Next**をクリック。
+5. 再度**Next**をクリック(オプションとアドバンストオプションのセクションはスキップ)。
+6. レビューページで最下部までスクロールし、クラウドフォーメーションがIAMリソースを作成する事を許可するチェックボックスにチェックを入れ、**Create stack**をクリック。
 
-**Note:** Instances that are launched as part of this CloudFormation template may be in the initializing state for few minutes.
+**注意:** このクラウドフォーメーションテンプレートで起動したインスタンスは数分間initializingステータスになるので、起動までお待ちください。
 
-While the CloudFormation deployment progresses in the on-premises region, you can proceed to deploy resources for the in-cloud region.
+オンプレミスリージョンへのクラウドフォーメーションのデプロイが進行中の状態でも、次のin-cloudリージョンのリソースのデプロイに進む事が出来ます。
 
-#### 2. Deploy AWS resources for the in-cloud region
+#### 2. in-cloudリージョンへのリソースのデプロイ
 
-1. Click one of the launch links in the table below to deploy the **in-cloud** resources using CloudFormation.  Use a different region from the on-premises region.  To avoid errors in deployment, select a region in which you have previously created AWS resources.
+1. クラウドフォーメーションを使用して**in-cloud**リソースをデプロイするために、以下の中からリンクを選択し、クリックして下さい。 先程作成したオンプレミスリージョンとは異なるリージョンを選択して下さい。 デプロイ中のエラーを回避するために、以前にリソースを作成した事の有るリージョンの選択を推奨します。
 
-  | **Region Code** | **Region Name** | **Launch** |
+  | **リージョンコード** | **リージョン名** | **起動リンク** |
   | --- | --- | --- |
-  | us-west-1 | US West (N. California) | [Launch in us-west-1](https://console.aws.amazon.com/cloudformation/home?region=us-west-1#/stacks/new?stackName=DataMigrationWorkshop-inCloudResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-in-cloud.yaml) |
-  | us-west-2 | US West (Oregon) | [Launch in us-west-2](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=DataMigrationWorkshop-inCloudResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-in-cloud.yaml) |
-  | us-east-1 | US East (N. Virginia) | [Launch in us-east-1](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=DataMigrationWorkshop-inCloudResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-in-cloud.yaml) |
-  | us-east-2 | US East (Ohio) | [Launch in us-east-2](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=DataMigrationWorkshop-inCloudResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-in-cloud.yaml) |
-  | eu-west-1 | Ireland | [Launch in eu-west-1](https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/new?stackName=DataMigrationWorkshop-inCloudResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-in-cloud.yaml) |
-  | eu-central-1 | Frankfurt | [Launch in eu-central-1](https://console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/new?stackName=DataMigrationWorkshop-inCloudResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-in-cloud.yaml) |
+  | us-west-1 | US West (N. California) | [us-west-1へデプロイ](https://console.aws.amazon.com/cloudformation/home?region=us-west-1#/stacks/new?stackName=DataMigrationWorkshop-inCloudResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-in-cloud.yaml) |
+  | us-west-2 | US West (Oregon) | [us-west-2へデプロイ](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=DataMigrationWorkshop-inCloudResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-in-cloud.yaml) |
+  | us-east-1 | US East (N. Virginia) | [us-east-1へデプロイ](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=DataMigrationWorkshop-inCloudResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-in-cloud.yaml) |
+  | us-east-2 | US East (Ohio) | [us-east-2へデプロイ](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=DataMigrationWorkshop-inCloudResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-in-cloud.yaml) |
+  | eu-west-1 | Ireland | [eu-west-1へデプロイ](https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/new?stackName=DataMigrationWorkshop-inCloudResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-in-cloud.yaml) |
+  | eu-central-1 | Frankfurt | [eu-central-1へデプロイ](https://console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/new?stackName=DataMigrationWorkshop-inCloudResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-in-cloud.yaml) |
 
-2. Click  **Next**  on the Create stack page.
-3. Click **Next** (there are no stack parameters) **.**
-4. Click  **Next**  again. (skipping the Options and Advanced options sections)
-5. On the Review page, scroll to the bottom and check the box to acknowledge that CloudFormation will create IAM resources, then click  **Create stack**.
+2. Create stackページで**Next**をクリック。
+3. **Next**をクリック (スタックパラメータは有りません)。
+4. 再度**Next**をクリック(オプションとアドバンストオプションのセクションはスキップ)。
+5. レビューページで最下部までスクロールし、クラウドフォーメーションがIAMリソースを作成する事を許可するチェックボックスにチェックを入れ、**Create stack**をクリック。
 
-Wait for the CloudFormation stacks in each region to reach the CREATE\_COMPLETE state before proceeding to the next steps.  It should take about 10 minutes for both CloudFormation stacks to complete.
+次のステップに進む前にそれぞれのリージョンのクラウドフォーメーションスタックのステータスがCREATE\_COMPLETEになるまでお待ち下さい。 完了まで10分程度かかります。
 
-**NOTE:** If a stack fails to deploy because an EC2 instance type is not available in a particular availability zone, delete the stack and retry in the same region or in a different region.
+**注意:** もし特定のアベイラビリティゾーンでEC2インスタンスタイプが対応しておらず、スタックのデプロイに失敗する場合は、もう一度
+試す、または別のリージョンでデプロイして下さい。
 
-#### 3. Stack Outputs
+#### 3. スタックアウトプット
 
-Upon completion, each CloudFormation stack will have a list of &quot;Outputs&quot;.  These are values such as IP addresses and resource names that will be used throughout the workshop.  You can either copy these values elsewhere or keep the page open in your browser and refer to them as you go through the workshop.
+完了後、それぞれのクラウドフォーメーションスタックは実行結果の&quot;アウトプット（出力）&quot;のリストを表示します。IPアドレスやリソース名等のこれらの情報はワークショップを通して使用します。これらの情報をコピーしておくか、このページをブラウザで表示したままワークショップを進めると、スムーズに進行出来ます。
 
-On the CloudFormation page in the **on-premises** region, click on the **Outputs** tab, as shown in the image below.  You should see four values listed:
+**オンプレミス**リージョンのクラウドフォーメーションページで**アウトプット（出力）**クリックすると以下のような4つの項目を確認出来ます。
 
-- **appServerPrivateIP** – This is the private IP address of the Application Server.  You will use this when creating the File Gateway file share to limit access to the NFS export.
-- **dataSyncAgentPublicIP** – This is the public IP address of the EC2 instance running the DataSync agent.  You will use this when activating the DataSync agent.
-- **fileGatewayPublicIP** – This is the public IP address of the EC2 instance running the File Gateway.  You will use this when activating the File Gateway.
-- **nfsServerPrivateIP** – This is the private IP address of the NFS server.  You will use this both on the Application Server and when creating a location for DataSync.
+- **appServerPrivateIP** – アプリケーションサーバーのプライベートIPアドレスです。File Gatewayにおいてファイル共有を作成する際、NFS Exportへのアクセスを制限するために使用します。
+- **dataSyncAgentPublicIP** – DataSyncエージェントが動作するEC2インスタンスのパブリックIPアドレスです。DataSyncエージェントをアクティベートする時に使用します。
+- **fileGatewayPublicIP** – File Gatewayが動作するEC2インスタンスのパブリックIPアドレスです。File Gatewayをアクティベートする時に使用します。
+- **nfsServerPrivateIP** – NFSサーバーのプライベートIPアドレスです。アプリケーションサーバーからのマウント及びDataSyncのロケーション作成時に使用します。
 
   ![](../images/mod1output1.png)
 
-On the CloudFormation page in the **in-cloud** region, click on the **Outputs** tab as shown in the image below.  You should see two values listed:
+**in-cloud**リージョンのクラウドフォーメーションページで**アウトプット（出力）**クリックすると以下のような2つの項目を確認出来ます。
 
-- **bucketName** – This is the name of the S3 bucket where the data will be copied to.  You will use this when creating a file share on the File Gateway.
-- **bucketRoleForDataSync** – This is the role that will be used by the DataSync agent to write files to the S3 bucket.  You will use this when creating the S3 location for DataSync.
+- **bucketName** – データコピー先のS3バケット名です。File Gatewayでファイル共有を作成する時に使用します。
+- **bucketRoleForDataSync** – DataSyncエージェントがS3バケットへファイルを書き込む際のIAMロールです。DataSyncでS3ロケーションを作成する時に使用します。
 
   ![](../images/mod1output2.png)
 
-#### 4. Connect to the Application server using EC2 Instance Connect
+#### 4. EC2インスタンスコネクトを使用してアプリケーションサーバーに接続します
 
-1. From the AWS console in the **on-premises** region, click  **Services**  and select  **EC2.**
-2. Select  **Instances**  from the menu on the left.
-3. Wait until the state of the four new instances (ApplicationServer, FileGateway, NfsServer, and DataSyncAgent) shows as _running_ and all Status Checks have completed (i.e. **not** in _Initializing_ state).
-4. Right-click on the **ApplicationServer** instance and select  **Connect** from the menu.
-5. From the dialog box, select the **Session Manager** option, as shown below:
+1. AWSコンソールから**オンプレミス** リージョンに移動し、**Services**の中から**EC2.**をクリックします。
+2. 左側のメニューから**インスタンス**をクリックします。
+3. Wait until the state of the four new instances 4つの新たなインスタンス(ApplicationServer, FileGateway, NfsServer, and DataSyncAgent)が _running_ になり、全てのステータスチェックが完了するまで待ちます (例 in _Initializing_ ステータス**ではありません**)。
+4. **ApplicationServer**インスタンスを右クリックし、メニューから**Connect**を選択します。
+5. ダイアログボックスから以下のようなイメージで**Session Manager**オプションを選択します。
 
   ![](../images/mod1ssh1.png)
 
-6. Click **Connect**.  A new tab will be opened in your browser with a command line interface (CLI) to the Application server. Keep this tab open - you will use the command line on the Application server throughout this workshop.
+6. **Connect**をクリックします。新しいブラウザのタブが開いて、アプリケーションサーバーへのCLIが表示されます。このタブは開いたままにしておいて下さい。ワークショップを通じてアプリケーションサーバーのCLIを使用します。
 
-## Validation Step
+## 最後に確認
 
-In the CLI for the Application server, run the following commands to mount the NFS export and verify the files on the NFS server.  Use the **nfsServerPrivateIP** value from the **on-premises** CloudFormation stack output.
+アプリケーションサーバーのCLIで、NFS exportをマウントしてNFSサーバー上のファイルを確認するために、以下のコマンドを実行して下さい。 **オンプレミス**クラウドフォーメーションスタックのアウトプット（出力）に含まれる**nfsServerPrivateIP**の値を使用してて下さい。
 
     $ sudo mount -t nfs <nfs-server-ip-address>:/media/data /mnt/data
     $ ls /mnt/data/images
 
-In the /mnt/data/images folder you should see 200 image files, as shown below.  These image files represent the NFS server data that will be migrated to the S3 bucket in the in-cloud region.
+以下のように/mnt/data/imagesフォルダーの配下に200個のイメージファイルが確認できるはずです。これらのイメージデータはin-cloudリージョンのS3にマイグレーションするNFSサーバーのデータとして使用します。
 
 ![](../images/mod1cli1.png)
 
-## Module Summary
+## このモジュールのまとめ
 
-In this module, you deployed all of the resources necessary to complete this workshop in both the on-premises region and the in-cloud region.  You have also mounted the NFS export on the Application server and verified your data set.
+このモジュールでは、オンプレミスリージョンとin-cloudリージョンに、このワークショップで必要となる全てのリソースをデプロイしました。また、アプリケーションサーバー上でNFS exportをマウントし、データセットを確認しました。
 
-In the next module, you will create a DataSync task to do an initial copy of files from the NFS server to the S3 bucket.
+次のモジュールではNFSサーバーからS3への初回データ同期を行うためのDataSyncタスクを作成します。
 
-Go to [Module 2](../module2/).
+[モジュール 2](../module2/)へ

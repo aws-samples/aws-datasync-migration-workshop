@@ -1,6 +1,6 @@
 # **AWS DataSync**
 
-### NFS server migration using AWS DataSync and AWS Storage Gateway
+### AWS DataSyncとAWS Storage Gatewayを使ったNFSサーバーマイグレーション
 
 © 2019 Amazon Web Services, Inc. and its affiliates. All rights reserved.
 This sample code is made available under the MIT-0 license. See the LICENSE file.
@@ -9,109 +9,104 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 
 ---
 
-# Module 2
-## Initial file copy to S3 using DataSync
+# モジュール 2
+## DataSyncを使用したS3への初回ファイル同期
 
-In this module, you will activate the DataSync agent deployed in the on-premises region, create DataSync locations, and then create a DataSync task to copy data from the source location to the destination location.
+このモジュールでは、オンプレミスリージョンにデプロイしたDataSyncエージェントをアクティベートし、DataSyncロケーションを作成、その後ソースロケーションから宛先ロケーションへデータをコピーするDataSyncタスクを作成します。
 
-DataSync tasks perform the job of copying data and require two &quot;locations&quot; – a source and a destination.  With DataSync, a location is an endpoint where files reside or will be copied to.  A location can be an NFS export, an SMB share, an Amazon S3 bucket, or an Amazon EFS file system.  Location objects are independent of tasks and a single location can be used with multiple tasks.
+DataSyncタスクはデータコピージョブを実行し、ソースと宛先の2つの &quot;ロケーション&quot;が必要です。大たsyncにおいてロケーションとは、ファイルが置かれている又はコピーの宛先となるエンドポイントです。ロケーションにはNFS export、SMB共有、Amazon S3バケット又はAmazon EFSファイルシステムが含まれます。ロケーションオブジェクトはタスク毎に固有で、1つのロケーションを複数のタスクで使用する事が可能です。
 
 ![](../images/mod2arch.png)
 
-## Module Steps
+## このモジュールの手順
 
-#### 1. Activate the DataSync agent
+#### 1. DataSyncエージェントのアクティベート
 
-Although the agent instance was created in the previous module, before it can be used it needs to be activated in the **in-cloud** region.  Follow the steps below to active the agent.
+前のモジュールでエージェント用のインスタンスを作成しましたが、実際に使用出来る状態にするには**in-cloud**リージョンでのアクティベートが必要です。エージェントをアクティベートするには以下の手順に従って下さい。
 
-1. Go to the AWS Management console page in the **in-cloud** region and click  **Services**  then select  **DataSync.**
-2. If no DataSync agents exist, click the **Get started** button, otherwise click the **Create agent** button.
-3. The EC2 instance that will run the DataSync agent has already been deployed in the **on-premises** region.
-4. Leave the Service endpoint as **"Public service endpoints"**.
-
-5. Under the **Activation key** section, enter the **Public IP address** of the DataSync agent instance running in the on-premises region.  You can get this IP address from the CloudFormation outputs in the on-premises region.  You use the public IP address here because the agent needs to be accessible by your web browser for activation.  Enter the IP address of the agent as shown below, then click **Get key.**
+1. AWSコンソールから**in-cloud** リージョンに移動し、**Services**の中から**DataSync.**をクリックします。
+2. もしDataSyncエージェントが存在しない場合、**Get started** ボタンをクリックして下さい。その他の場合、**Create agent** ボタンをクリックして下さい。
+3. DataSyncエージェントとして動作するEC2インスタンスは既に **オンプレミス** リージョンにデプロイされています。
+4. サービスエンドポイントの値は、そのまま**"Public service endpoints"**にして下さい。
+5. **Activation key** セクションの中に、オンプレミスリージョンのDataSyncエージェントインスタンスの **Public IP address** を入力して下さい。この値はオンプレミスリージョンのクラウドフォーメーションのアウトプット（出力）から入手出来ます。  アクティベーションのためにブラウザからアクセス出来る必要が有るため、ここではパブリックIPアドレスを使用します。以下のようにエージェントのIPアドレスを入力して、**Get key.**をクリックして下さい。
 
   ![](../images/mod2ds1.png)
 
-6. Once the activation is successful, you will be shown the activation key and will be prompted for further information.
+6. アクティベーションが成功すると、アクティベーションキーが表示され、その他諸処の情報が表示されます。
 
   ![](../images/mod2ds2.png)
 
-7. Enter an Agent name if desired, then click **Create agent**.
+7. 必要に応じてエージェント名を入力して**Create agent**をクリックして下さい。
 
-#### 2. Create NFS location
+#### 2. NFSロケーションの作成
 
-1. On the left-hand side of the DataSync service page, click on **Locations** and then click on **Create location**.
-
-2. Create a location for the on-premises NFS server.  Select **Network File System (NFS)** from the _Location type_ drop-down.
-3. From the _Agents_ drop-down, select the DataSync agent that was created in the previous step.
-4. Enter the **Private IP address** of the NFS server, per the CloudFormation outputs in the **on-premises** region.  This was the same IP address used to mount the NFS export on the Application server, in the previous module.  The is the IP address that the DataSync agent will use to mount the NFS export.
-5. Under _Mount path_, enter &quot;/media/data&quot;.
+1. DataSyncサービスのページの左側で、**Locations**をクリックし、**Create location**をクリックして下さい。
+2. オンプレミスNFSサーバーのロケーションを作成します。_Location type_のドロップダウンメニューから**Network File System (NFS)**を選択して下さい。
+3. _Agents_ドロップダウンメニューから前の手順で作成したDataSyncエージェントを選択して下さい。
+4. オンプレミスリージョンのクラウドフォーメーションのアウトプット（出力）を参照して、NFSサーバーの**Private IP address**を入力して下さい。これは前のモジュールでアプリケーションサーバーからNFS exportをマウントした時と同じIPアドレスで、DataSyncエージェントがNFS exportをマウントする時に使用します。
+5. _Mount path_の所には&quot;/media/data&quot;を入力して下さい。
 
   ![](../images/mod2ds3.png)
 
-6. Click **Create location**.
+6. **Create location**をクリックして下さい。
 
-#### 3. Create S3 location
+#### 3. S3ロケーションの作成
 
-1. On the left-hand side of the DataSync service page, click on **Locations** and then click on **Create location**.
-
-2. Create a location for the S3 bucket.  Select **Amazon S3 bucket** from the _Location type_ drop-down.
-3. From the _S3 bucket_ drop-down, select the S3 bucket that starts with **data-migration-workshop** and is followed by a long GUID.
-4. Keep the S3 storage class as **Standard**.
-4. Under _Folder_, enter &quot;/&quot;.  This will copy all files to the top-level of the bucket.
-5. Under _IAM role_, select the S3 bucket IAM role that starts with **DataMigrationWorkshop-inCloud**.  The full name of the role can be found in the outputs for the in-cloud CloudFormation stack.
+1. DataSyncサービスのページの左側で、**Locations**をクリックし、**Create location**をクリックして下さい。
+2. S3バケットのロケーションを作成します。_Location type_ドロップダウンメニューから**Amazon S3 bucket**を選択して下さい。
+3. _S3 bucket_ドロップダウンメニューから**data-migration-workshop**で始まるバケット名を選択して下さい。
+4. S3ストレージクラスは**Standard**のままにして下さい。
+4. _Folder_の所には&quot;/&quot;を入力して下さい。これにより全てのファイルがバケットのトップレベルにコピーされます。
+5. _IAM role_の所には**DataMigrationWorkshop-inCloud**で始まるS3バケットIAMロールを選択して下さい。このフルネームはin-cloudリージョンのクラウドフォーメーションのアウトプット（出力）から入手出来ます。 
 
   ![](../images/mod2ds4.png)
 
-6. Click **Create location**.
+6. **Create location**をクリックして下さい。
 
-On the left-side of the page, click **Locations** again.  You should now have two locations listed.  One for the NFS server and one for the S3 bucket.
-
+ページの左側で再び**Locations**をクリックして下さい。2つのロケーションが表示されます。1つはNFSサーバー、もう1つはS3バケットです。
 ![](../images/mod2ds5.png)
 
-#### 4. Create a task
+#### 4. タスクの作成
 
-1. On the left-hand side of the DataSync service page, click on **Tasks** and then click on **Create task**.
-
-2. Under _Source location options_, select **Choose an existing location**.
-3. Under the _Existing locations_ drop-down, select the NFS server location you created previously.
-4. Click **Next.**
+1. DataSyncサービスのページの左側で、**Tasks**をクリックし、**Create task**をクリックして下さい。
+2. _Source location options_の所で**Choose an existing location**を選択して下さい。
+3. _Existing locations_ドロップダウンメニューで、前の手順で作成したNFSサーバーのロケーションを選択して下さい。
+4. **Next.**をクリックして下さい。
 
   ![](../images/mod2ds6.png)
 
-5. Under _Destination location options_, select **Choose an existing location**.
-6. Under the _Existing locations_ drop-down, select the S3 bucket location you created previously.
-7. Click **Next.**
-8. Under the **Verify data** drop-down, select **Verify only the data transferred**. Keep all other options as-is and then click **Next.**
-9. Click **Create task.**
+5. _Destination location options_の所で**Choose an existing location**を選択して下さい。
+6. _Existing locations_ドロップダウンメニューで、 前の手順で作成したS3バケットのロケーションを選択して下さい。d
+7. **Next.**をクリックして下さい。
+8. **Verify data**ドロップダウンメニューで、**Verify only the data transferred**を選択して下さい。その他のオプションはデフォルトのままで**Next.**をクリックして下さい。
+9. **Create task.**をクリックして下さい。
 
-#### 5. Run the task
+#### 5. タスクの起動
 
-1. Wait for the **Task status** to report &quot;Available&quot; (you may need to refresh the page).
+1. **Task status**が&quot;Available&quot;になるまでお待ち下さい。(ページのリフレッシュが必要な場合が有ります)
 
   ![](../images/mod2ds7.png)
 
-2. To run the task, click the **Start** button, verify the settings, and then click **Start**.
-3. The task will immediately go into the &quot;Running&quot; state.
-4. Under the **History** tab, click on the task execution object in the list.
+2. タスクの起動のため、**Start**ボタンをクリックし、設定確認後、**Start**をクリックして下さい。
+3. タスクは直ぐに&quot;Running&quot;ステータスへと変わります。
+4. **History**タブの所で、実行中のタスクをクリックして下さい。
 
   ![](../images/mod2ds8.png)
 
-5. As the task runs, the execution status will progress from &quot;Launching&quot; to &quot;Preparing&quot; to &quot;Transferring&quot; to &quot;Verifying&quot; and finally to &quot;Success&quot;.  The task execution will report statistics on the job, as shown below.  It will take a few minutes for the task to complete.  Once the task has finished, notice that 202 files were transferred.  This is the 200 files in the data set along with the two folders in the path that we specified.
+5. タスクが進行すると、ステータスが&quot;Launching&quot;から&quot;Preparing&quot;、&quot;Transferring&quot;、&quot;Verifying&quot;へと変化し、最後に&quot;Success&quot;へと変わります。以下のようにタスクの実行状態が表示されます。タスクが完了するまで数分間かかります。タスクが完了すると、202個のファイルが転送された事が示されます。これは200個のファイルと2つのフォルダの合計です。
 
   ![](../images/mod2ds9.png)
 
-## Validation Step
+## 最後に確認
 
-From the in-cloud region management console, select **Services** then **S3.**  In the bucket list, click on the **data-migration-workshop** bucket.  You should see a top-level folder named &quot;images&quot;. Inside this folder should be the 200 .jpg files from the NFS server.
+in-cloudリージョンのマネジメントコンソールで、**Services**、**S3.**の順に選択します。バケットのリストの中から**data-migration-workshop**バケットをクリックします。&quot;images&quot;という名前のトップレベルフォルダが見えます。 このフォルダの中にはNFSサーバーからコピーされた200個のjpgファイルが存在します。
 
 ![](../images/mod2validate.png)
 
-## Module Summary
+## このモジュールのまとめ
 
-In this module you successfully activated the DataSync agent and created a task to copy files from the on-premises NFS server into the S3 bucket.  You then verified that the files were copied successfully.
+このモジュールでは、DataSyncエージェントをアクティベートし、オンプレミスのNFSサーバーからS3バケットへファイルをコピーするタスクを作成しました。その後、ファイルがコピーされている事を確認しました。
 
-In the next module, you will configure the on-premises File Gateway to connect to the S3 bucket, providing access to the in-cloud files via NFS.
+次のモジュールでは、オンプレミスのFile GatewayをS3につなげるように設定し、NFS経由のクラウドアクセスを提供します。
 
-Go to [Module 3](../module3/).
+[モジュール 3](../module3/)へ

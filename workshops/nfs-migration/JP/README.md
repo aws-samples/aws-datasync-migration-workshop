@@ -1,6 +1,6 @@
 # **AWS DataSync**
 
-### NFS server migration using AWS DataSync and AWS Storage Gateway
+### AWS DataSyncとAWS Storage Gatewayを使ったNFSサーバーマイグレーション
 
 © 2019 Amazon Web Services, Inc. and its affiliates. All rights reserved.
 This sample code is made available under the MIT-0 license. See the LICENSE file.
@@ -9,52 +9,52 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 
 ---
 
-## Workshop scenario
+## このワークショップのシナリオ
 
-In your data center, you have an NFS server that is starting to age out.  Most of the data on the server is several years old and is only accessed for reading occasionally.  There are new files being written to the server but not very often.  To reduce your data center footprint and to free up resources, you would like to move the data on the NFS server into the cloud.  However, you cannot yet move your application servers that access the NFS data – those need to stay on-premises to minimize latency for your users.
+あなたのデータセンターには更新時期が迫ったNFSサーバーが存在します。ほとんどのデータは数年前に作成されたもので、時折、読み出しが必要な時だけアクセスされます。新規のファイル書き込みも有りますが、それほど頻繁では有りません。データセンターのフットプリントを削減し、リソースを解放するため、あなたはNFSサーバーのデータをクラウドへ移行させようとしています。しかし、アプリケーションサーバーはNFSのデータを使用しており、まだ移行する事は出来ません。それらはユーザーへの遅延の影響を最小化するために、オンプレミスに置いておく必要が有ります。
 
-After doing some research, you have realized that you can use [AWS DataSync](https://aws.amazon.com/datasync/) to migrate the data from your on-premises NFS server to Amazon S3, and you can use [AWS Storage Gateway](https://aws.amazon.com/storagegateway) to provide NFS access on-premises to the data once it is in S3.
+色々と調べたところ、あなたはオンプレミスのNFSサーバーからAmazon S3へのデータマイグレーションに[AWS DataSync](https://aws.amazon.com/datasync/)が使える事を知り、更に[AWS Storage Gateway](https://aws.amazon.com/storagegateway)により、S3へ移行したデータへのオンプレミスからのNFSアクセスを提供できる事を知りました。
 
-This workshop will walk you through this scenario, using CloudFormation templates to deploy resources and the AWS Management console to configure those resources accordingly.  As shown in the architecture diagram below, an NFS server, an Application server, a DataSync agent, and a File Gateway appliance will be deployed in an AWS region simulating the on-premises environment.  An S3 bucket will be created in an AWS region, simulating the AWS cloud region to which the NFS server&#39;s data will be migrated.
+このワークショップでは、クラウドフォーメーションテンプレートを使用してリソースをデプロイし、デプロイしたリソースをAWSマネージメントコンソールから操作しながら、このシナリオの流れを学習します。以下の構成図のように、NFSサーバー、アプリケーションサーバー、DataSyncエージェント、File Gatewayアプライアンスが、オンプレミス環境を擬似したリージョンにデプロイされます。1つのS3バケットがNFSサーバーのデータのマイグレート先としてAWSリージョンに作成されます。
 
 ![](images/fullarch.png)
 
-## Topics covered
+## このワークショップでカバーされる内容
 
-- Deploying resources using CloudFormation
-- Configuring a Linux NFS server
-- Configure CloudWatch logging for DataSync
-- Planning a migration of millions of files using DataSync
-- Using DataSync with multiple tasks running in parallel
+- クラウドフォーメーションを使ったリソースのデプロイ
+- Linux NFSサーバーの設定
+- DataSyncのCloudWatchログの設定
+- DtaSyncを使った数百万ファイルのマイグレーションの流れ
+- 複数のDataSyncタスクによる並列処理
 
-## Prerequisites
+## 前提条件
 
-#### AWS Account
+#### AWSアカウント
 
-In order to complete this workshop, you will need an AWS account with rights to create AWS IAM roles, EC2 instances, AWS DataSync, AWS Storage Gateway and CloudFormation stacks in the AWS regions you select.
+このワークショップを完了させるには、ワークショップ内で登場するリージョンで、EC2インスタンス、AWS DataSync、AWS Storage Gateway、CloudFormationスタックを作成する権限を持ったAWS IAMロールを持ったAWSアカウントが必要です。
 
-#### Software
+#### ソフトウェア
 
-- **Internet Browser**  – It is recommended that you use the latest version of Chrome or Firefox for this workshop.
+- **インターネットブラウザ**  – このワークショップには最新バージョンのChrome又はFirefoxを推奨します
 
-## Cost
+## コスト
 
-It will cost approximately **3.00 USD** to run this workshop.  It is recommended that you follow the cleanup instructions once you have completed the workshop to remove all deployed resources and limit ongoing costs to your AWS account.
+このワークショップを完了させるにはおよそ**3.00 USD**のコストがかかります。ワークショップ完了後は全てのデプロイしたリソースを削除し、無駄なコストを生じさせないように、モジュール最後に有るクリーンアップのガイダンスに従う事を推奨します。
 
-## Related workshops
+## 関連するワークショップ
 
 - [Migrate millions of files using AWS DataSync](https://github.com/aws-samples/aws-datasync-migration-workshop/blob/master/workshops/nfs-million-files)
 - [Migrate to FSx Windows File Server using AWS DataSync](https://github.com/aws-samples/aws-datasync-fsx-windows-migration)
 - [Get hands-on with online data migration options to simplify & accelerate your journey to AWS](https://github.com/aws-samples/aws-online-data-migration-workshop)
 
-## Workshop Modules
+## ワークショップモジュール
 
-This workshop consists of the following five modules:
+このワークショップは以下の5つのモジュールで構成されます
 
-- [Module 1](module1/)  - Deploy resources in the on-premises and in-cloud regions
-- [Module 2](module2/) - Initial file copy to S3 using DataSync
-- [Module 3](module3/)  - Access S3 bucket on-premises using File Gateway
-- [Module 4](module4/)  - One last incremental copy before cutover
-- [Module 5](module5/) - Cutover to File Gateway and shutdown the NFS server
+- [モジュール 1](module1/)  - オンプレミスとin-cloudリージョンへのリソースのデプロイ
+- [モジュール 2](module2/) - DataSyncを使用したS3への初回ファイル同期
+- [モジュール 3](module3/)  - File Gatewayを使用したオンプレミスからのS3バケットへのアクセス
+- [モジュール 4](module4/)  - カットオーバー前の最後の差分同期
+- [モジュール 5](module5/) - File Gatewayへの完全移行とNFSサーバーのシャットダウン
 
-To get started, go to [Module 1](module1/).
+始めるには [モジュール 1](module1/)へ

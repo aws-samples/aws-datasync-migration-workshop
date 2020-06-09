@@ -1,6 +1,6 @@
 # **AWS DataSync**
 
-### NFS server migration using AWS DataSync and AWS Storage Gateway
+### AWS DataSyncとAWS Storage Gatewayを使ったNFSサーバーマイグレーション
 
 © 2019 Amazon Web Services, Inc. and its affiliates. All rights reserved.
 This sample code is made available under the MIT-0 license. See the LICENSE file.
@@ -9,73 +9,72 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 
 ---
 
-# Module 3
-## Access S3 bucket on-premises using File Gateway
+# モジュール 3
+## File Gatewayを使用したオンプレミスからのS3バケットへのアクセス
 
-You now have the files from the NFS server copied to your S3 bucket.  In this module, you will configure the File Gateway in the on-premises region to connect to your S3 bucket and provide access to the files in the bucket through an NFS share.  You will mount the File Gateway share on the Application server to validate access to the files.
+ここまでの手順でDataSyncを使ってNFSサーバーからS3へファイルをコピーしました。このモジュールでは、オンプレミスリージョンのFile GatewayをS3バケットへ接続し、NFS共有を経由してS3バケットのファイルへのアクセスを提供する設定を行います。ファイルへのアクセスを確認するために、アプリケーションサーバーからFile GatewayのNFS共有をマウントします。
 
 ![](../images/fullarch.png)
 
-## Module Steps
+## このモジュールの手順
 
-#### 1. Activate the File Gateway
+#### 1. File Gatewayのアクティベート
 
-Just as you activated the DataSync agent in the previous module, you need to perform a similar step for the File Gateway, activating it in the **in-cloud** region.  Follow the steps below to activate the gateway.
+前のモジュールでDataSyncエージェントをアクティベートしたのと同様、File Gatewayを**in-cloud**リージョンでアクティベートする手順を行います。以下の手順に従って下さい。
 
-1. Go to the AWS Management console page in the **in-cloud** region and click  **Services**  then select  **Storage Gateway.**
-
-2. If no gateways exist, click the **Get started** button, otherwise click the **Create gateway** button.
-3. Select the **File gateway** type and click **Next.**
-4. Select **Amazon EC2** as the host platform, then click **Next**.
-5. Select the **Public** endpoint type, then click **Next**.
-6. Enter the **Public IP address** of the File Gateway instance that was created in the first module using CloudFormation.  Click **Connect to gateway**.
-7. Name the gateway &quot;DataMigrationGateway&quot; then click **Activate gateway**.
-8. The gateway will be activated and then it will spend a minute or so preparing the local disk devices.  Allocate the **300 GiB /dev/sdc** device to **Cache.**  This is the local disk on the gateway that will be used to cache frequently accessed files.
-9. Click **Configure logging.**
-10. Leave the setting at _Disable Logging_ then click **Save and continue.**
-11. From the main Storage Gateway page, you will see your gateway listed.
+1. AWSコンソールから**in-cloud** リージョンに移動し、**Services**の中から**Storage Gateway.**をクリックします。
+2. もしゲートウェイが存在しない場合、**Get started** ボタンをクリックして下さい。その他の場合、**Create gateway** ボタンをクリックして下さい。
+3. **File gateway**タイプを選択し、**Next.**をクリックして下さい。
+4. ホストプラットフォームとして**Amazon EC2**を選択し、**Next**をクリックして下さい。
+5. **Public**エンドポイントタイプを選択し、**Next**をクリックして下さい。
+6. モジュール１のクラウドフォーメーションで作成したFile Gatewayインスタンスの**Public IP address**を入力し、**Connect to gateway**をクリックして下さい。
+7. ゲートウェイ名として&quot;DataMigrationGateway&quot;を入力し、**Activate gateway**をクリックして下さい。
+8. ゲートウェイがアクティベートされ、その後ローカルディスクデバイスの準備のため、数分時間がかかります。**300 GiB /dev/sdc**デバイスを**Cache.**に割り当てて下さい。これは頻繁にアクセスされるファイルをキャッシュするためのゲートウェイのローカルディスク領域になります。
+9. **Configure logging.**をクリックして下さい。
+10. _Disable Logging_の設定はそのままにして**Save and continue.**をクリックして下さい。
+11. Storage Gatewayのメインページに、作成したゲートウェイが表示されます。
 
   ![](../images/mod3fgw1.png)
 
-#### 2. Create an NFS share
+#### 2. NFS共有の作成
 
-1. Click on the **Create file share** button
-2. For the **Amazon S3 bucket name** , enter the name of the S3 bucket that DataSync copied the files to.  You can find the bucket name in the outputs of the CloudFormation stack in the **in-cloud** region.
-3. Select **NFS** as the access method and make sure your gateway from the previous step is selected.
-4. Click **Next**.
-5. Keep the default settings, then click **Next**
-6. Under the **Allowed clients** section, click **Edit** and change &quot;0.0.0.0/0&quot; to the **Private IP Address** of the Application server, followed by "/32".  This will only allow the Application server to access the NFS file share on the gateway.  Click the **Close** button.
-7. Under the **Mount options** section, change the **Squash level** to &quot;No root squash&quot;.  Click the **Close** button.
-8. Click **Create file share**.
-9. Select the check box next to the new file share and note the mount instructions.
+1. **Create file share**ボタンをクリックして下さい。
+2. **Amazon S3 bucket name**の所に、DataSyncのデータコピー先のバケット名を入力して下さい。これはin-cloudリージョンのクラウドフォーメーションのアウトプット（出力）からも取得出来ます。
+3. アクセス方式として**NFS**を選択し、前の手順で作成したゲートウェイが選択されている事を確認して下さい。
+4. **Next**をクリックして下さい。
+5. デフォルト設定のまま**Next**をクリックして下さい。
+6. **Allowed clients**セクションで、**Edit**をクリックし、&quot;0.0.0.0/0&quot;からアプリケーションサーバーの**Private IP Address**に変更し、末尾に"/32"を加えて下さい。これにより、アプリケーションサーバーだけがゲートウェイのNFS共有にアクセス出来るようになります。**Close**ボタンををクリックして下さい。
+7. **Mount options**セクションで、**Squash level**を&quot;No root squash&quot;に変更して下さい。**Close**ボタンををクリックして下さい。
+8. **Create file share**をクリックして下さい。
+9. 作成したファイル共有のチェックボックスにチェックを入れ、マウント手順を確認して下さい。
 
   ![](../images/mod3fgw2.png)
 
-#### 3. Mount the NFS share on the Application server
+#### 3. アプリケーションサーバーからNFS共有をマウント
 
-1. Return to the CLI for the Application server and run the following command to create a new mount point for the File Gateway share:
+1. アプリケーションサーバーのCLIに戻り、File Gateway共有へのマウントポイントを作成するために、以下のコマンドを実行して下さい。
 
         $ sudo mkdir /mnt/fgw
 
-1. Copy the Linux mount command from the Storage Gateway file share page and replace &quot;[MountPath]&quot; with &quot;/mnt/fgw&quot;.   **You must run the command as sudo.**
-2. You should now have two NFS mount points on your Application server: one for the on-premises NFS server (mounted at /mnt/data) and one for the File Gateway (mounted at /mnt/fgw).
+1. Storage Gatewayのファイル共有ページのLinuxコマンドをコピーし、&quot;[MountPath]&quot;部分を&quot;/mnt/fgw&quot;に入れ替えて実行して下さい。   **必ずsudoで実行する必要が有ります。.**
+2. これでアプリケーションサーバーに2つのNFSマウントポイントが作成されました。一つはオンプレミスのNFSサーバー（/mnt/dataにマウント）、もう1つはFile Gateway（/mnt/fgwにマウント）です。
 
   ![](../images/mod3cli1.png)
 
-## Validation Step
+## 最後に確認
 
-Run the following command to verify that the same set of files exist on both NFS shares.
+2つのNFS共有に同じファイルが存在する事を確認するため、以下のコマンドを実行して下さい。
 
     $ diff -qr /mnt/data /mnt/fgw
 
-You should see only one extra file in /mnt/fgw: .aws-datasync-metadata.  This file was created by DataSync in the S3 bucket when the task was executed.  All other files are the same, indicating that our data was fully transferred by DataSync without errors.
+/mnt/fgwの中に1つだけ追加のファイルが見えます（.aws-datasync-metadata）。このファイルはDataSyncがタスクの完了の際にS3バケットの中に作り出したものです。他の全てのファイルは一致しており、これはDataSyncによってエラーなく転送された事を示します。
 
-## Module Summary
+## このモジュールのまとめ
 
-In this module you successfully activated the File Gateway and created an NFS file share on the gateway.  You then mounted the share on the Application server and verified that the files from the on-premises NFS server were copied correctly to the S3 bucket.
+このモジュールでは、File Gatewayをアクティベートし、NFSファイル共有をゲートウェイ上に作成しました。その後、アプリケーションサーバーからファイル共有をマウントし、オンプレミスのNFSサーバーと、DataSyncでS3に転送したデータを比較検証しました。
 
-Remember that our ultimate goal in this workshop is to shut off the on-premises NFS server and free up storage resources.  In a production environment, this would typically involve a &quot;cutover point&quot;, where there is momentary downtime as the Application server changes over to the new storage, which in this workshop is the File Gateway NFS share.  However, there are usually new files being created while a migration occurs, or shortly after, requiring another incremental file copy before cutover.
+このワークショップの完全なゴールはオンプレミスのNFSサーバーをシャットダウンしてストレージリソースを解放する事である事を思い出して下さい。本番環境では通常、アプリケーションサーバーの接続先が完全にFile Gatewayに切り替わる&quot;カットオーバーポイント&quot;が存在します。しかし実際はマイグレーション後に新たな書き込みが発生し、カットオーバー前にデータの差分が生じます。
 
-In the next module, you&#39;ll do one more incremental copy before the final cutover to the File Gateway share.
+次のモジュールでは、File Gatewayへの最後のカットオーバーの前に、もう一度差分データ同期を行います。
 
-Go to [Module 4](../module4/).
+[モジュール 4](../module4/)へ

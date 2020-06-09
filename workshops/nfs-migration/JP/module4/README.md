@@ -1,6 +1,6 @@
 # **AWS DataSync**
 
-### NFS server migration using AWS DataSync and AWS Storage Gateway
+### AWS DataSyncとAWS Storage Gatewayを使ったNFSサーバーマイグレーション
 
 © 2019 Amazon Web Services, Inc. and its affiliates. All rights reserved.
 This sample code is made available under the MIT-0 license. See the LICENSE file.
@@ -9,62 +9,62 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 
 ---
 
-# Module 4
-## One last incremental copy before cutover
+# モジュール 4
+## カットオーバー前の最後の差分同期
 
-In this module, you will perform an incremental data transfer using DataSync.  This will get any new files that may have been created after the initial data copy.  Once you have verified all files from the on-premises NFS server have been copied, you can proceed to cutover.
+このモジュールでは、DataSyncを使って差分データのコピーを行います。これにより、初期同期後に作成されたファイルを再同期する事が出来ます。全てのファイルがオンプレミスのNFSサーバーからコピーされた事が確認出来れば、カットオーバーに進む事が出来ます。
 
 ![](../images/fullarch.png)
 
-## Module Steps
+## このモジュールの手順
 
-#### 1. Create a new file on the NFS server
+#### 1. NFSサーバーに新しいファイルを作成
 
-1. From the CLI for the Application server, run the following command to create a new file on the NFS server:
+1. 新しいファイルをNFSサーバー上に作成するため、アプリケーションサーバーのCLIから以下のコマンドを実行します。
 
         $ sudo cp /mnt/data/images/00001.jpg /mnt/data/new-image.jpg
 
-#### 2. Copy the new file to the S3 bucket
+#### 2. 新しいファイルをS3バケットへコピー
 
-You have already created a DataSync task to copy files from the NFS server to the S3 bucket.  To copy the new file, you will just re-run the task.  DataSync will only copy files that have changed between the source and the destination.
+NFSサーバーからS3バケットへファイルをコピーするDataSyncタスクは既に作成済みです。新しいファイルをコピーするのに必要な事は、単にもう一度タスクを起動するだけです。DataSyncはソースと宛先の間で、変化の有ったファイルだけをコピーします。
 
-1. Return to the in-cloud region AWS management console and go to the **DataSync** service.
-2. Select the task created previously and click the **Start** button.
-3. Use the default settings and then click **Start**.
-4. Go to the History tab and select the newest task execution from the list.
+1. in-cloudリージョンのAWSマネジメントコンソールに戻り、**DataSync**サービスをクリック。
+2. 作成済みのタスクを選択し、**Start**ボタンをクリック。
+3. デフォルト設定を使用し、**Start**をクリック。
+4. Historyタブ上で、リストの中から最新のタスクの実行を選択
 
   ![](../images/mod4ds1.png)
 
-It will take a few minutes for the task to complete.  When the task completes, take a look at the stats.  Although you ran the exact same task as last time, only 2 files were copied (the new file and the changes on the folder that contains the new file).
+タスクの完了まで数分かかります。タスクが完了したら転送済ファイルの数を見て下さい。同じタスクを実行したにも関わらず、2つのファイルしか転送されていません。(新しいファイルそのものと、それを格納しているフォルダーです）
 
 ![](../images/mod4ds2.png)
 
-If you take a look at the S3 bucket, you see that the new file is there, just as expected:
+S3バケットの中身を見ると、期待通りファイルが転送されている事が確認出来ます。
 
 ![](../images/mod4s31.png)
 
-## Validation Step
+## 最後に確認
 
-With the new file in the S3 bucket, you should be able to see it through the File Gateway share on the Application server, right?  Let&#39;s take a look:
+S3に新しいファイルがコピーされたのだから、アプリケーションサーバから見ればFile Gateway共有にも見えるはず？実際に見てみましょう。
 
 ![](../images/mod4cli1.png)
 
-Hmm.  You copied the file from the NFS server to S3 using DataSync.  And the File Gateway is connected to the S3 bucket.  So what&#39;s going on?  Why can&#39;t you see the file on the File Gateway share on the Application server?
+んー。。。 確かにDataSyncを使ってNFSサーバーからS3へコピーしたはずです。そしてFile GatewayはS3バケットに繋がっているはずです。何が起きているんでしょう？何故アプリケーションサーバからfile Gateway共有上に新しいファイルが見えないんでしょう。
 
-In this case, the file was written to the S3 bucket via DataSync, **not** through the File Gateway share itself.  File Gateway is not aware that there are new objects in the bucket.  In order to see the new file on the Application server, you need to refresh the metadata cache on the File Gateway.
+このケースでは新しいファイルはFile Gateway共有経由**ではなく**DataSync経由でS3へ書き込まれました。File Gatewayはバケットに新しいオブジェクトが有る事を知りません。新しいファイルをアプリケーションサーバーに見せるために、File Gatewayのメタデータキャッシュをリフレッシュする必要が有ります。
 
-Go to the in-cloud region management console and go to the **Storage Gateway** service.  On the left side of the page, click on **File shares** and select the NFS share from the list.  Click on the **Actions** button and select **Refresh cache** then click **Start**.
+in-cloudリージョンのAWSマネジメントコンソールに戻り、**Storage Gateway**サービスをクリック。ページの左側で**File shares**をクリックし、リストからNFS共有を選択。**Actions**ボタンをクリックし、**Refresh cache**を選択。次に**Start**をクリック。
 
-In this case, you have a bucket with only a few hundred objects, so the refresh will be quick.  Note that on large buckets with many objects, a cache refresh can take quite a bit of time.  To reduce the scope of the refresh, you can use the API or CLI and limit the refresh to a specific directory.  You can also use CloudWatch events to monitor when a cache refresh completes.
+このケースではバケットの中には数百のオブジェクトしか無いため、リフレッシュは直ぐに完了します。多くのオブジェクトを抱えた大きなバケットでは、キャッシュのリフレッシュに時間がかかる可能性が有るので注意して下さい。リフレッシュのスコープを削減してこの問題を改善するために、API又はCLIを使用して、特定のディレクトリだけのリフレッシュをするように制限をかける事が出来ます。CloudWatchイベントで、キャッシュのリフレッシュの完了をモニタする事も出来ます。
 
-Head back to the CLI for the Application server and repeat the &quot;ls /mnt/fgw&quot; command.  You should now see the new file.
+アプリケーションサーバーのCLIに戻り、再度&quot;ls /mnt/fgw&quot;コマンドを実行して下さい。新しいファイルを見る事が出来ます。
 
 ![](../images/mod4cli2.png)
 
-## Module Summary
+## このモジュールのまとめ
 
-In this module you added a new file to the NFS server prior to cutover.  You then ran the DataSync task a second time to pick up any file changes and copy them to S3.  Finally, you used the Refresh Cache method to update the metadata on the File Gateway to see the new files in S3.
+このモジュールでは、カットオーバー前にNFSサーバーへ新しいファイルを追加しました。次にDataSyncタスクを再度実行し、NFSサーバーとS3間の差分データ転送を行いました。最後にFile Gatewayのメタデータをアップデートするため、キャッシュのリフレッシュを行いました。
 
-With all of the data copied from the NFS server to S3, you are now ready to perform the cutover.
+NFSサーバーからS3への全てのデータの転送が完了したため、いよいよカットオーバーに進む事が出来ます。
 
-Go to [Module 5](../module5/).
+[モジュール 5](../module5/)へ
