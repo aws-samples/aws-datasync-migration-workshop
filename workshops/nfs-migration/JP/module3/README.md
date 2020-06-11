@@ -22,16 +22,16 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 
 前のモジュールでDataSyncエージェントをアクティベートしたのと同様、File Gatewayを**in-cloud**リージョンでアクティベートする手順を行います。以下の手順に従って下さい。
 
-1. AWSコンソールから**in-cloud** リージョンに移動し、**Services**の中から**Storage Gateway.**をクリックします。
+1. AWSコンソールから**in-cloud** リージョンに移動し、**Services**の中から**Storage Gateway**をクリックします。
 2. もしゲートウェイが存在しない場合、**Get started** ボタンをクリックして下さい。その他の場合、**Create gateway** ボタンをクリックして下さい。
-3. **File gateway**タイプを選択し、**Next.**をクリックして下さい。
+3. **File gateway**タイプを選択し、**Next**をクリックして下さい。
 4. ホストプラットフォームとして**Amazon EC2**を選択し、**Next**をクリックして下さい。
 5. **Public**エンドポイントタイプを選択し、**Next**をクリックして下さい。
 6. モジュール１のクラウドフォーメーションで作成したFile Gatewayインスタンスの**Public IP address**を入力し、**Connect to gateway**をクリックして下さい。
 7. ゲートウェイ名として&quot;DataMigrationGateway&quot;を入力し、**Activate gateway**をクリックして下さい。
-8. ゲートウェイがアクティベートされ、その後ローカルディスクデバイスの準備のため、数分時間がかかります。**300 GiB /dev/sdc**デバイスを**Cache.**に割り当てて下さい。これは頻繁にアクセスされるファイルをキャッシュするためのゲートウェイのローカルディスク領域になります。
-9. **Configure logging.**をクリックして下さい。
-10. _Disable Logging_の設定はそのままにして**Save and continue.**をクリックして下さい。
+8. ゲートウェイがアクティベートされ、その後ローカルディスクデバイスの準備のため、数分時間がかかります。**300 GiB /dev/sdc**デバイスを**Cache**に割り当てて下さい。これは頻繁にアクセスされるファイルをキャッシュするためのゲートウェイのローカルディスク領域になります。
+9. **Configure logging**をクリックして下さい。
+10. Disable Loggingの設定はそのままにして**Save and continue**をクリックして下さい。
 11. Storage Gatewayのメインページに、作成したゲートウェイが表示されます。
 
   ![](../images/mod3fgw1.png)
@@ -56,7 +56,7 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 
         $ sudo mkdir /mnt/fgw
 
-1. Storage Gatewayのファイル共有ページのLinuxコマンドをコピーし、&quot;[MountPath]&quot;部分を&quot;/mnt/fgw&quot;に入れ替えて実行して下さい。   **必ずsudoで実行する必要が有ります。.**
+1. Storage Gatewayのファイル共有ページのLinuxコマンドをコピーし、&quot;[MountPath]&quot;部分を&quot;/mnt/fgw&quot;に入れ替えて実行して下さい。   **必ずsudoで実行する必要が有ります。**
 2. これでアプリケーションサーバーに2つのNFSマウントポイントが作成されました。一つはオンプレミスのNFSサーバー（/mnt/dataにマウント）、もう1つはFile Gateway（/mnt/fgwにマウント）です。
 
   ![](../images/mod3cli1.png)

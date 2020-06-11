@@ -24,7 +24,7 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 - クラウドフォーメーションを使ったリソースのデプロイ
 - Linux NFSサーバーの設定
 - DataSyncのCloudWatchログの設定
-- DtaSyncを使った数百万ファイルのマイグレーションの流れ
+- DataSyncを使った数百万ファイルのマイグレーションの流れ
 - 複数のDataSyncタスクによる並列処理
 
 ## 前提条件

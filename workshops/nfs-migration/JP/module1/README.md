@@ -68,7 +68,7 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 
 完了後、それぞれのクラウドフォーメーションスタックは実行結果の&quot;アウトプット（出力）&quot;のリストを表示します。IPアドレスやリソース名等のこれらの情報はワークショップを通して使用します。これらの情報をコピーしておくか、このページをブラウザで表示したままワークショップを進めると、スムーズに進行出来ます。
 
-**オンプレミス**リージョンのクラウドフォーメーションページで**アウトプット（出力）**クリックすると以下のような4つの項目を確認出来ます。
+**オンプレミス**リージョンのクラウドフォーメーションページで**アウトプット（出力）**をクリックすると以下のような4つの項目を確認出来ます。
 
 - **appServerPrivateIP** – アプリケーションサーバーのプライベートIPアドレスです。File Gatewayにおいてファイル共有を作成する際、NFS Exportへのアクセスを制限するために使用します。
 - **dataSyncAgentPublicIP** – DataSyncエージェントが動作するEC2インスタンスのパブリックIPアドレスです。DataSyncエージェントをアクティベートする時に使用します。
@@ -77,7 +77,7 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 
   ![](../images/mod1output1.png)
 
-**in-cloud**リージョンのクラウドフォーメーションページで**アウトプット（出力）**クリックすると以下のような2つの項目を確認出来ます。
+**in-cloud**リージョンのクラウドフォーメーションページで**アウトプット（出力）**をクリックすると以下のような2つの項目を確認出来ます。
 
 - **bucketName** – データコピー先のS3バケット名です。File Gatewayでファイル共有を作成する時に使用します。
 - **bucketRoleForDataSync** – DataSyncエージェントがS3バケットへファイルを書き込む際のIAMロールです。DataSyncでS3ロケーションを作成する時に使用します。
@@ -86,9 +86,9 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 
 #### 4. EC2インスタンスコネクトを使用してアプリケーションサーバーに接続します
 
-1. AWSコンソールから**オンプレミス** リージョンに移動し、**Services**の中から**EC2.**をクリックします。
+1. AWSコンソールから**オンプレミス** リージョンに移動し、**Services**の中から**EC2**をクリックします。
 2. 左側のメニューから**インスタンス**をクリックします。
-3. Wait until the state of the four new instances 4つの新たなインスタンス(ApplicationServer, FileGateway, NfsServer, and DataSyncAgent)が _running_ になり、全てのステータスチェックが完了するまで待ちます (例 in _Initializing_ ステータス**ではありません**)。
+3. 4つの新たなインスタンス(ApplicationServer, FileGateway, NfsServer, and DataSyncAgent)が _running_ になり、全てのステータスチェックが完了するまで待ちます (例 in _Initializing_ ステータスでは**ありません**)。
 4. **ApplicationServer**インスタンスを右クリックし、メニューから**Connect**を選択します。
 5. ダイアログボックスから以下のようなイメージで**Session Manager**オプションを選択します。
 
