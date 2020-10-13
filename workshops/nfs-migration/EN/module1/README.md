@@ -83,17 +83,21 @@ On the CloudFormation page in the **in-cloud** region, click on the **Outputs** 
 
   ![](../images/mod1output2.png)
 
-#### 4. Connect to the Application server using EC2 Instance Connect
+#### 4. Connect to the Application server
 
 1. From the AWS console in the **on-premises** region, click  **Services**  and select  **EC2.**
 2. Select  **Instances**  from the menu on the left.
-3. Wait until the state of the four new instances (ApplicationServer, FileGateway, NfsServer, and DataSyncAgent) shows as _running_ and all Status Checks have completed (i.e. **not** in _Initializing_ state).
-4. Right-click on the **ApplicationServer** instance and select  **Connect** from the menu.
-5. From the dialog box, select the **Session Manager** option, as shown below:
+3. Right-click on the **ApplicationServer** instance and select  **Connect** from the menu.
+
+If you configured an EC2 Key Pair when you deployed the on-premises CloudFormation template, then you can connect using an SSH client from your computer:
 
   ![](../images/mod1ssh1.png)
 
-6. Click **Connect**.  A new tab will be opened in your browser with a command line interface (CLI) to the Application server. Keep this tab open - you will use the command line on the Application server throughout this workshop.
+Otherwise you can connect to the instanct directly through your browser using either EC2 Instance Connect or Session Manager:
+
+  ![](../images/mod1connect.png)
+
+If using EC2 Instance Connect or Session Manager, click **Connect**.  A new tab will be opened in your browser with a command line interface (CLI) to the Application server. Keep this tab open - you will use the command line on the Application server throughout this workshop.
 
 ## Validation Step
 

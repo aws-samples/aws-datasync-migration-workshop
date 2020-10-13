@@ -40,8 +40,8 @@ Just as you activated the DataSync agent in the previous module, you need to per
 #### 2. Create an NFS share
 
 1. Click on the **Create file share** button
-2. For the **Amazon S3 bucket name** , enter the name of the S3 bucket that DataSync copied the files to.  You can find the bucket name in the outputs of the CloudFormation stack in the **in-cloud** region.
-3. Select **NFS** as the access method and make sure your gateway from the previous step is selected.
+2. For the **Amazon S3 bucket name** , enter the name of the S3 bucket that DataSync copied the files to.  You can find the bucket name in the outputs of the CloudFormation stack in the **in-cloud** region.  Leave the **S3 prefix name** blank.
+3. Select **NFS** as the access method and make sure your gateway from the previous step is selected.  Leave the **Automated cache refresh** box unchecked.
 4. Click **Next**.
 5. Keep the default settings, then click **Next**
 6. Under the **Allowed clients** section, click **Edit** and change &quot;0.0.0.0/0&quot; to the **Private IP Address** of the Application server, followed by "/32".  This will only allow the Application server to access the NFS file share on the gateway.  Click the **Close** button.

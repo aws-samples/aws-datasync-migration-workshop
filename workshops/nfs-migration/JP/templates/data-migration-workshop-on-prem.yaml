@@ -20,10 +20,8 @@ Metadata:
 
   AWS::CloudFormation::Interface:
     ParameterGroups:
-      # - Label:
-      #     default: Security
-      #   Parameters:
-      #     - kp
+      - Parameters:
+          - kp
       - Label:
           default: AMI IDs (do not edit)
         Parameters:
@@ -31,8 +29,8 @@ Metadata:
           - fgwAmi
           - dsAmi
     ParameterLabels:
-      # kp:
-      #   default: 'Access Key Pair:'
+      kp:
+        default: 'EC2 Key Pair Name (optional):'
       linuxAmi:
         default: 'Linux'
       fgwAmi:
@@ -41,19 +39,28 @@ Metadata:
         default: 'DataSync'
 
 Parameters:
-  # kp:
-  #   Description: '(NOTE: If you don''t see a key in the list you will need to create
-  #     one from the EC2 console in this region)'
-  #   Type: AWS::EC2::KeyPair::KeyName
+  kp:
+    Description: 'A key pair is optional.  If not specified, you can access instances through the EC2 console using Session Manager or EC2 Instance Connect.'
+    #Type: AWS::EC2::KeyPair::KeyName
+    Type: String
   linuxAmi:
     Type : 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
     Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+    AllowedValues: ['/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2']
   fgwAmi:
     Type : 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
     Default: '/aws/service/storagegateway/ami/FILE_S3/latest'
+    AllowedValues: ['/aws/service/storagegateway/ami/FILE_S3/latest']
   dsAmi:
     Type : 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
     Default: '/aws/service/datasync/ami'
+    AllowedValues: ['/aws/service/datasync/ami']
+
+Conditions:
+  # Allow users to optionally specify an EC2 key pair to use for the
+  # instance resources created in this template.  If not specified then
+  # users can still use Session Manager from the AWS console.
+  UseEc2Keypair: !Not [ !Equals ['', !Ref 'kp'] ]
 
 Resources:
 
@@ -213,7 +220,7 @@ Resources:
             - - NfsServer (
               - !Ref 'AWS::StackName'
               - )
-      # KeyName: !Ref 'kp'
+      KeyName: !If [ 'UseEc2Keypair', !Ref 'kp', !Ref 'AWS::NoValue' ]
       InstanceInitiatedShutdownBehavior: terminate
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
@@ -246,7 +253,7 @@ Resources:
             - - ApplicationServer (
               - !Ref 'AWS::StackName'
               - )
-      # KeyName: !Ref 'kp'
+      KeyName: !If [ 'UseEc2Keypair', !Ref 'kp', !Ref 'AWS::NoValue' ]
       InstanceInitiatedShutdownBehavior: terminate
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
@@ -317,7 +324,7 @@ Resources:
             - - DataSyncAgent (
               - !Ref 'AWS::StackName'
               - )
-      # KeyName: !Ref 'kp'
+      KeyName: !If [ 'UseEc2Keypair', !Ref 'kp', !Ref 'AWS::NoValue' ]
       InstanceInitiatedShutdownBehavior: stop
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
@@ -383,7 +390,7 @@ Resources:
             - - FileGateway (
               - !Ref 'AWS::StackName'
               - )
-      # KeyName: !Ref 'kp'
+      KeyName: !If [ 'UseEc2Keypair', !Ref 'kp', !Ref 'AWS::NoValue' ]
       InstanceInitiatedShutdownBehavior: stop
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
