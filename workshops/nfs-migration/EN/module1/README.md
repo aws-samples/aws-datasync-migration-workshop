@@ -32,7 +32,8 @@ In this module, you will use CloudFormation scripts to deploy resources in two A
   | eu-central-1 | Frankfurt | [Launch in eu-central-1](https://console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/new?stackName=DataMigrationWorkshop-onPremResources&amp;templateURL=https://aws-datasync-samples.s3-us-west-2.amazonaws.com/workshops/nfs-migration/data-migration-workshop-on-prem.yaml) |
 
 2. Click **Next** on the Create Stack page.
-3. Click **Next** (there are no stack parameters that need to be modified).
+3. If you want to access EC2 instances created in this workshop using your local SSH client then enter the name of an EC2 key pair in your selected region.  Otherwise, you can leave the key pair blank.
+3. Click **Next**.
 4. Click **Next**.
 5. Click **Next** again. (skipping the Options and Advanced options sections)
 6. On the Review page, scroll to the bottom and check the box to acknowledge that CloudFormation will create IAM resources, then click  **Create stack**.
