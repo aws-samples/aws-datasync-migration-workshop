@@ -39,8 +39,8 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 #### 2. NFS共有の作成
 
 1. **Create file share**ボタンをクリックして下さい。
-2. **Amazon S3 bucket name**の所に、DataSyncのデータコピー先のバケット名を入力して下さい。これはin-cloudリージョンのクラウドフォーメーションのアウトプット（出力）からも取得出来ます。
-3. アクセス方式として**NFS**を選択し、前の手順で作成したゲートウェイが選択されている事を確認して下さい。
+2. **Amazon S3 bucket name**の所に、DataSyncのデータコピー先のバケット名を入力して下さい。これはin-cloudリージョンのクラウドフォーメーションのアウトプット（出力）からも取得出来ます。**S3 prefix name**のところは空欄のままにして下さい。
+3. アクセス方式として**NFS**を選択し、前の手順で作成したゲートウェイが選択されている事を確認して下さい。**Automated cache refresh**のチェックボックスは外したままにして下さい。
 4. **Next**をクリックして下さい。
 5. デフォルト設定のまま**Next**をクリックして下さい。
 6. **Allowed clients**セクションで、**Edit**をクリックし、&quot;0.0.0.0/0&quot;からアプリケーションサーバーの**Private IP Address**に変更し、末尾に"/32"を加えて下さい。これにより、アプリケーションサーバーだけがゲートウェイのNFS共有にアクセス出来るようになります。**Close**ボタンををクリックして下さい。
