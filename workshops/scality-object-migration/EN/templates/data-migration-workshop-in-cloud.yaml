@@ -1,0 +1,236 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS DataSync Workshop - Scality Object Migration - In-Cloud Region
+Metadata:
+  License:
+    Description: |
+      Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+      Permission is hereby granted, free of charge, to any person obtaining a copy of this
+      software and associated documentation files (the "Software"), to deal in the Software
+      without restriction, including without limitation the rights to use, copy, modify,
+      merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+      permit persons to whom the Software is furnished to do so.
+
+      THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+      INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+      PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+      HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+      OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+      SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Parameters:
+          - kp
+      - Label:
+          default: AMI IDs (do not edit)
+        Parameters:
+          - linuxAmi
+    ParameterLabels:
+      kp:
+        default: 'EC2 Key Pair Name (optional):'
+      linuxAmi:
+        default: Linux
+Parameters:
+  kp:
+    Description: |
+      A key pair is optional.  If not specified, you can access instances
+      through the EC2 console using Session Manager or EC2 Instance Connect.
+    #Type: AWS::EC2::KeyPair::KeyName
+    Type: String
+  linuxAmi:
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
+    AllowedValues:
+      - /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
+Conditions:
+  UseEc2Keypair: !Not 
+    - !Equals 
+      - ''
+      - !Ref kp
+
+Resources:  
+  # We use the GUID from the ARN of the stack ID to generate
+  # a unique bucket name
+  s3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: True
+        BlockPublicPolicy: True
+        IgnorePublicAcls: True
+        RestrictPublicBuckets: True
+      BucketName: !Join
+      - "-"
+      - - "data-migration-workshop"
+        - !Select
+          - 2
+          - !Split
+            - "/"
+            - !Ref "AWS::StackId"
+
+  # Give the role a friendly name as the workshop user will need to
+  # reference it when creating DataSync tasks.
+  s3BucketIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - datasync.amazonaws.com
+                - ec2.amazonaws.com
+        Version: '2012-10-17'
+  s3BucketRolePolicy:
+    Type: AWS::IAM::Policy
+    DependsOn: s3Bucket
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Resource: !GetAtt s3Bucket.Arn
+            Action:
+              - s3:GetBucketLocation
+              - s3:ListBucket
+              - s3:ListBucketMultipartUploads
+              - s3:HeadBucket
+          - Effect: Allow
+            Resource: !Join [ "/", [ !GetAtt s3Bucket.Arn, "*" ] ]
+            Action:
+              - s3:AbortMultipartUpload
+              - s3:DeleteObject
+              - s3:GetObject
+              - s3:ListMultipartUploadParts
+              - s3:PutObject
+              - s3:PutObjectTagging
+              - s3:GetObjectTagging
+        Version: '2012-10-17'
+      PolicyName: policy
+      Roles:
+        - !Ref 's3BucketIamRole'
+
+  dmVPC:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: 10.11.12.0/24
+      EnableDnsSupport: 'true'
+      EnableDnsHostnames: 'true'
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: DataMigrationWorkshopVPC
+  dmSubnet1:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref dmVPC
+      CidrBlock: 10.11.12.0/24
+      MapPublicIpOnLaunch: 'True'
+      Tags:
+        - Key: Name
+          Value: DataMigrationWorkshopSubnet1
+  dmInternetGateway:
+    Type: 'AWS::EC2::InternetGateway'
+    Properties:
+      Tags:
+        - Key: Name
+          Value: DataMigrationWorkshopIGW
+  dmAttachGateway:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
+    Properties:
+      VpcId: !Ref dmVPC
+      InternetGatewayId: !Ref dmInternetGateway
+  dmRouteTable:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Ref dmVPC
+      Tags:
+        - Key: Name
+          Value: DataMigrationWorkshopRouteTable
+  dmSubnet1RouteAssociaton:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      SubnetId: !Ref dmSubnet1
+      RouteTableId: !Ref dmRouteTable
+  dmRoutetoInternet:
+    Type: 'AWS::EC2::Route'
+    DependsOn: dmInternetGateway
+    Properties:
+      RouteTableId: !Ref dmRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref dmInternetGateway
+  dmSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Data Migration Workshop - Security Group for all resources
+      VpcId: !Ref dmVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 0.0.0.0/0
+
+  appServerInstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      Path: /
+      Roles:
+        - !Ref s3BucketIamRole
+
+  appServer:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: !Ref linuxAmi
+      InstanceType: t2.micro
+      IamInstanceProfile: !Ref appServerInstanceProfile
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - ApplicationServer (
+              - !Ref 'AWS::StackName'
+              - )
+      KeyName: !If 
+        - UseEc2Keypair
+        - !Ref kp
+        - !Ref 'AWS::NoValue'
+      InstanceInitiatedShutdownBehavior: terminate
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: '8'
+            DeleteOnTermination: 'true'
+            VolumeType: gp2
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: 'true'
+          DeviceIndex: '0'
+          GroupSet:
+            - !Ref dmSecurityGroup
+          SubnetId: !Ref dmSubnet1
+      UserData: !Base64 
+        Fn::Join:
+          - ''
+          - - "#!/bin/bash\n"
+            - "sudo mkdir /mnt/data\n"
+  dmLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: dmLogGroup
+
+Outputs:
+  bucketName:
+    Description: S3 Bucket Name
+    Value: !Ref 's3Bucket'
+  bucketRoleForDataSync:
+    Description: S3 Bucket Role for DataSync
+    Value: !Ref 's3BucketIamRole'
+  appServerPrivateIP:
+    Description: Application Server Private IP Address
+    Value: !GetAtt 
+      - appServer
+      - PrivateIp
+  dataSyncLogGroupName:
+    Description: Log group for DataSync tasks
+    Value: !Ref dmLogGroup
