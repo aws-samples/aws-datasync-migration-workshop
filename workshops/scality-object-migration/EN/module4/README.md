@@ -24,7 +24,7 @@ In this module, you will perform an incremental data transfer using DataSync.  T
 
         $ aws configure set aws_access_key_id AccessKey --profile scality
         $ aws configure set aws_secret_access_key SecretKey --profile scality
-        $ for i in {00201..00210}; do aws s3 cp /media/data/images/$i.jpg s3://data/images/ --endpoint-url http://<S3ServerPrivateIP>:8000/ --profile scality >> /tmp/sync; done
+        $ for i in {00201..00210}; do aws s3 cp /media/data/images/$i.jpg s3://data/images/ --endpoint-url http://<S3ServerPrivateIP>:8000/ --profile scality; done
 
 #### 2. Copy the new file to the S3 bucket
 
