@@ -14,7 +14,7 @@ In this repository you'll find a number of workshops and other resources designe
 To run through each workshop, you will need an AWS Account, preferably with Admin privileges.  Although the workshops are designed to be self-contained - using CloudFormation templates for easy deployment and cleanup - they should __not__ be run in production accounts.
 
 ### Workshops
-## The following workshops are now being maintained in AWS [workshop studio](https://workshops.aws/)
+#### The following workshops are now being maintained in AWS [workshop studio](https://workshops.aws/)
 
 - [NFS server migration using AWS DataSync and Storage Gateway](https://catalog.us-east-1.prod.workshops.aws/datasync-nfs-server-migration-with-storage-gateway/en-US)
 - [Migrate millions of files using AWS DataSync](https://catalog.us-east-1.prod.workshops.aws/datasync-migrate-millions-of-files/en-US)
