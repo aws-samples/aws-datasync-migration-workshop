@@ -9,6 +9,12 @@ Errors or corrections? Contact [jeffbart@amazon.com](mailto:jeffbart@amazon.com)
 
 ---
 
+**This workshop is now being maintained in AWS [workshop studio](https://workshops.aws/)**
+
+- [Migrate millions of files using AWS DataSync](https://catalog.us-east-1.prod.workshops.aws/datasync-migrate-millions-of-files/en-US)
+
+---
+
 ## Workshop scenario
 
 This is an advanced-level workshop on using [AWS DataSync](https://aws.amazon.com/datasync/)
